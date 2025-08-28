@@ -1,0 +1,58 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Climate Adaptation Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">🌍 Climate Adaptation Dashboard</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="files" class="form-label">Upload one or more climate adaptation documents:</label>
+            <input class="form-control" type="file" name="files" id="files" multiple required>
+        </div>
+        <button type="submit" class="btn btn-success">Analyze Document(s)</button>
+    </form>
+
+    {% if result %}
+    <hr>
+    <div class="sidebar">
+        <h4>🏙️ City Profile</h4>
+        <p><strong>City:</strong> {{ result.city_info.city }}</p>
+        <p><strong>Country:</strong> {{ result.city_info.country }}</p>
+        <p><strong>Climate Zone:</strong> {{ result.city_info.climate_zone }}</p>
+        <p><strong>Population:</strong> {{ result.city_info.population }}</p>
+    </div>
+
+    <div id="map" style="height: 300px;"></div>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="/static/map.js"></script>
+    <script>
+        setMap("{{ result.city_info.city }}, {{ result.city_info.country }}");
+    </script>
+
+    <div class="result-section">
+        <h2>📊 Analysis Results</h2>
+        {% for category, items in result.categories.items() %}
+            <h4 class="category-title">{{ category }}</h4>
+            <ul>{% for sub in items %}<li>{{ sub }}</li>{% endfor %}</ul>
+        {% endfor %}
+    </div>
+
+    <div class="insights">
+        <h3>🧠 LLM Insights</h3>
+        <h5>Strengths:</h5>
+        <ul>{% for s in result.insights.strengths %}<li>{{ s }}</li>{% endfor %}</ul>
+        <h5>Gaps:</h5>
+        <ul>{% for g in result.insights.gaps %}<li>{{ g }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>

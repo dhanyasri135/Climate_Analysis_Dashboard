@@ -1,0 +1,58 @@
+<!-- templates/compare.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compare Cities - Climate Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">🌍 City Comparison View</h1>
+
+    <div class="row">
+        {% for result in results %}
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">📍 {{ result.city_info.city }}, {{ result.city_info.country }}</h4>
+                    <p><strong>Climate Zone:</strong> {{ result.city_info.climate_zone }}</p>
+                    <p><strong>Population:</strong> {{ result.city_info.population }}</p>
+
+                    <div class="result-section">
+                        <h5>🧠 LLM Insights</h5>
+                        <strong>Strengths:</strong>
+                        <ul>{% for s in result.insights.strengths %}<li>{{ s }}</li>{% endfor %}</ul>
+                        <strong>Gaps:</strong>
+                        <ul>{% for g in result.insights.gaps %}<li>{{ g }}</li>{% endfor %}</ul>
+                    </div>
+
+                    <div class="result-section">
+                        <h5>📊 Analysis Results</h5>
+                        {% for category, items in result.categories.items() %}
+                            <strong>{{ category }}</strong>
+                            <ul>{% for sub in items %}<li>{{ sub }}</li>{% endfor %}</ul>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="map" style="height: 400px;"></div>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="/static/map.js"></script>
+    <script>
+        const cities = [
+            {% for result in results %}
+            "{{ result.city_info.city }}, {{ result.city_info.country }}"{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+        setMultipleMarkers(cities);
+    </script>
+</div>
+</body>
+</html>
