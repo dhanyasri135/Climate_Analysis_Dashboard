@@ -1,0 +1,44 @@
+city,country,region,population_millions,gdp_per_capita,climate_zone,coastal,flood_risk,heat_risk,drought_risk,sea_level_rise_risk,adaptation_plan_exists,infrastructure_vulnerability,financial_capacity,stakeholder_engagement,resilience_score
+Tokyo,Japan,Asia,37.4,43593,Temperate,Yes,High,Medium,Low,High,Yes,Medium,High,High,7.8
+Delhi,India,Asia,30.3,2116,Arid,No,Medium,High,High,Low,Yes,High,Low,Medium,5.2
+Shanghai,China,Asia,27.1,25374,Subtropical,Yes,High,High,Low,High,Yes,Medium,High,High,7.5
+São Paulo,Brazil,South America,22.0,11253,Tropical,No,Medium,Medium,Medium,Low,Yes,Medium,Medium,Medium,6.3
+Mexico City,Mexico,North America,21.8,10046,Temperate,No,Low,High,High,Low,Yes,High,Medium,High,6.1
+Cairo,Egypt,Africa,20.9,3699,Arid,No,Low,High,High,Low,Yes,High,Low,Low,4.5
+Mumbai,India,Asia,20.4,2116,Tropical,Yes,High,High,Medium,High,Yes,High,Low,Medium,5.8
+Beijing,China,Asia,20.4,25374,Continental,No,Low,High,Medium,Low,Yes,Medium,High,High,7.2
+Dhaka,Bangladesh,Asia,20.2,2064,Tropical,No,High,High,Medium,Medium,Yes,High,Low,Low,4.2
+Osaka,Japan,Asia,19.3,43593,Temperate,Yes,Medium,Medium,Low,High,Yes,Low,High,High,7.9
+New York,USA,North America,18.8,75419,Temperate,Yes,High,Medium,Low,High,Yes,Medium,High,High,8.2
+Karachi,Pakistan,Asia,16.0,1357,Arid,Yes,Medium,High,High,Medium,No,High,Low,Low,3.8
+Buenos Aires,Argentina,South America,15.0,11683,Subtropical,No,Medium,High,Medium,Low,Yes,Medium,Medium,Medium,6.5
+Chongqing,China,Asia,15.0,25374,Subtropical,No,Medium,High,Low,Low,Yes,Medium,High,Medium,6.8
+Istanbul,Turkey,Europe,15.0,9693,Temperate,Yes,Medium,High,Low,Medium,Yes,Medium,Medium,Medium,6.4
+Kolkata,India,Asia,14.9,2116,Tropical,No,High,High,Medium,Low,Yes,High,Low,Medium,5.1
+Manila,Philippines,Asia,13.9,3485,Tropical,Yes,High,High,Low,High,Yes,High,Low,Medium,5.3
+Lagos,Nigeria,Africa,13.9,2065,Tropical,Yes,High,High,Medium,High,No,High,Low,Low,3.9
+Rio de Janeiro,Brazil,South America,13.3,11253,Tropical,Yes,High,High,Low,Medium,Yes,Medium,Medium,Medium,6.2
+Tianjin,China,Asia,13.2,25374,Continental,Yes,Medium,High,Low,Medium,Yes,Medium,High,Medium,6.9
+Kinshasa,DR Congo,Africa,13.2,580,Tropical,No,Medium,High,Medium,Low,No,High,Low,Low,3.5
+Guangzhou,China,Asia,13.1,25374,Subtropical,No,Medium,High,Low,Low,Yes,Medium,High,Medium,7.0
+Los Angeles,USA,North America,12.4,75419,Mediterranean,Yes,Low,High,High,Low,Yes,Medium,High,High,7.8
+Moscow,Russia,Europe,12.4,11585,Continental,No,Low,Low,Low,Low,Yes,Medium,Medium,Medium,6.7
+Shenzhen,China,Asia,12.4,25374,Subtropical,Yes,Medium,High,Low,Medium,Yes,Low,High,High,7.3
+Lahore,Pakistan,Asia,12.3,1357,Arid,No,Medium,High,High,Low,No,High,Low,Low,3.7
+Bangalore,India,Asia,12.3,2116,Tropical,No,Low,High,High,Low,Yes,Medium,Low,Medium,5.5
+Paris,France,Europe,11.0,46062,Temperate,No,Medium,High,Low,Low,Yes,Low,High,High,8.0
+Bogotá,Colombia,South America,10.9,7333,Tropical,No,Medium,Medium,Medium,Low,Yes,Medium,Medium,Medium,6.0
+Jakarta,Indonesia,Asia,10.6,4333,Tropical,Yes,High,High,Low,High,Yes,High,Medium,Medium,5.6
+Chennai,India,Asia,10.5,2116,Tropical,Yes,High,High,High,High,Yes,High,Low,Medium,5.0
+Lima,Peru,South America,10.4,6927,Arid,Yes,Low,Medium,High,Medium,Yes,Medium,Medium,Medium,5.9
+Bangkok,Thailand,Asia,10.2,7189,Tropical,No,High,High,Low,Low,Yes,Medium,Medium,Medium,6.1
+Seoul,South Korea,Asia,9.8,33590,Temperate,No,Medium,High,Low,Low,Yes,Low,High,High,7.7
+Nagoya,Japan,Asia,9.5,43593,Temperate,Yes,Medium,Medium,Low,High,Yes,Low,High,High,7.9
+Hyderabad,India,Asia,9.5,2116,Tropical,No,Low,High,High,Low,Yes,Medium,Low,Medium,5.4
+London,UK,Europe,9.3,46827,Temperate,No,Medium,Medium,Low,Low,Yes,Low,High,High,8.1
+Tehran,Iran,Asia,9.1,5415,Arid,No,Low,High,High,Low,Yes,Medium,Medium,Low,5.0
+Chicago,USA,North America,8.9,75419,Continental,Yes,Medium,High,Low,Low,Yes,Low,High,High,7.9
+Chengdu,China,Asia,8.8,25374,Subtropical,No,Medium,Medium,Low,Low,Yes,Medium,High,Medium,6.8
+Nanjing,China,Asia,8.5,25374,Subtropical,No,Medium,High,Low,Low,Yes,Medium,High,Medium,6.9
+Wuhan,China,Asia,8.4,25374,Subtropical,No,High,High,Low,Low,Yes,Medium,High,Medium,6.7
+Ho Chi Minh City,Vietnam,Asia,8.2,3694,Tropical,No,High,High,Low,Low,Yes,Medium,Medium,Medium,6.0

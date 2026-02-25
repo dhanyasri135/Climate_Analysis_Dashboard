@@ -9,8 +9,25 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link active" href="/">Document Analysis</a>
+            <a class="nav-link" href="/statistics">Statistical Analysis</a>
+        </div>
+    </div>
+</nav>
+
 <div class="container">
-    <h1 class="text-center">🌍 Climate Adaptation Dashboard</h1>
+    <h1 class="text-center">🌍 LLM-Powered Document Analysis</h1>
+
+    <div class="alert alert-info" role="alert">
+        <strong>📊 API Usage:</strong> Gemini API free tier allows 20 requests/day. 
+        Each document uses <strong>1 API call</strong> (optimized to combine all analyses). 
+        If you hit the limit, <a href="/statistics" class="alert-link">explore the Statistical Analysis</a> 
+        which shows 43 megacities without API calls.
+    </div>
 
     <form method="post" enctype="multipart/form-data">
         <div class="mb-3">
@@ -39,10 +56,17 @@
 
     <div class="result-section">
         <h2>📊 Analysis Results</h2>
-        {% for category, items in result.categories.items() %}
-            <h4 class="category-title">{{ category }}</h4>
-            <ul>{% for sub in items %}<li>{{ sub }}</li>{% endfor %}</ul>
-        {% endfor %}
+        {% if result.categories.error %}
+            <div class="alert alert-warning" role="alert">
+                <strong>⚠️ Error:</strong> {{ result.categories.error }}
+                <br><small>Please try again later or check the <a href="/statistics">Statistical Analysis</a> section.</small>
+            </div>
+        {% else %}
+            {% for category, items in result.categories.items() %}
+                <h4 class="category-title">{{ category }}</h4>
+                <ul>{% for sub in items %}<li>{{ sub }}</li>{% endfor %}</ul>
+            {% endfor %}
+        {% endif %}
     </div>
 
     <div class="insights">

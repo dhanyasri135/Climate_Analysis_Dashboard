@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Analysis - Climate Adaptation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section-header {
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        .correlation-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            margin-bottom: 10px;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">Document Analysis</a>
+                <a class="nav-link active" href="/statistics">Statistical Analysis</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="text-center mb-4">📊 Statistical Analysis: 43 Global Megacities</h1>
+        <p class="text-center text-muted mb-5">
+            Quantitative Framework for Climate Resilience Assessment
+        </p>
+
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% else %}
+
+        <!-- Summary Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number">{{ stats.summary_stats.total_cities }}</div>
+                    <div class="stat-label">Total Megacities</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number">{{ stats.summary_stats.avg_resilience_score }}</div>
+                    <div class="stat-label">Avg Resilience Score</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number">{{ stats.summary_stats.cities_with_plans }}</div>
+                    <div class="stat-label">Cities with Plans</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-number">{{ stats.summary_stats.high_flood_risk }}</div>
+                    <div class="stat-label">High Flood Risk</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs for Different Analyses -->
+        <ul class="nav nav-tabs" id="analysisTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" 
+                        data-bs-target="#overview" type="button">Overview</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="regression-tab" data-bs-toggle="tab" 
+                        data-bs-target="#regression" type="button">Regression Analysis</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="correlation-tab" data-bs-toggle="tab" 
+                        data-bs-target="#correlation" type="button">Correlations</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="categorical-tab" data-bs-toggle="tab" 
+                        data-bs-target="#categorical" type="button">Chi-Square Tests</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="analysisTabContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <div id="resilienceDistChart"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <div id="regionalCompChart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <div id="riskCompChart"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <div id="adaptationPlanChart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <div id="gdpResilienceChart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regression Tab -->
+            <div class="tab-pane fade" id="regression" role="tabpanel">
+                <div class="section-header">
+                    <h3>Multiple Linear Regression Analysis</h3>
+                    <p>Target Variable: <strong>{{ stats.regression_analysis.target_variable }}</strong></p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h5>R² Score</h5>
+                            <div class="stat-number" style="font-size: 2rem;">
+                                {{ stats.regression_analysis.r_squared }}
+                            </div>
+                            <p class="text-muted">Model Quality: {{ stats.regression_analysis.model_quality }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="chart-container">
+                            <div id="regressionCoefChart"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <h5>Regression Coefficients</h5>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Variable</th>
+                                        <th>Coefficient</th>
+                                        <th>Impact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for coef in stats.regression_analysis.coefficients %}
+                                    <tr>
+                                        <td>{{ coef.variable }}</td>
+                                        <td>{{ coef.coefficient }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if coef.impact == 'Positive' else 'danger' }}">
+                                                {{ coef.impact }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Correlation Tab -->
+            <div class="tab-pane fade" id="correlation" role="tabpanel">
+                <div class="section-header">
+                    <h3>Correlation Analysis</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <div id="correlationHeatmap"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <h5>Significant Correlations (|r| > 0.5)</h5>
+                            {% for corr in stats.correlation_analysis.significant_correlations %}
+                            <div class="correlation-item">
+                                <strong>{{ corr.var1 }}</strong> ↔ <strong>{{ corr.var2 }}</strong>
+                                <span class="badge bg-primary float-end">r = {{ corr.correlation }}</span>
+                                <br>
+                                <small class="text-muted">Strength: {{ corr.strength }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorical Analysis Tab -->
+            <div class="tab-pane fade" id="categorical" role="tabpanel">
+                <div class="section-header">
+                    <h3>Chi-Square Tests & Cramer's V</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h6>Climate Zone vs Adaptation Plan</h6>
+                            <p><strong>χ²:</strong> {{ stats.categorical_analysis.climate_zone_vs_adaptation_plan.chi2_statistic }}</p>
+                            <p><strong>p-value:</strong> {{ stats.categorical_analysis.climate_zone_vs_adaptation_plan.p_value }}</p>
+                            <p><strong>Cramer's V:</strong> {{ stats.categorical_analysis.climate_zone_vs_adaptation_plan.cramers_v }}</p>
+                            <span class="badge bg-{{ 'success' if stats.categorical_analysis.climate_zone_vs_adaptation_plan.significant else 'secondary' }}">
+                                {{ 'Significant' if stats.categorical_analysis.climate_zone_vs_adaptation_plan.significant else 'Not Significant' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h6>Coastal Location vs Flood Risk</h6>
+                            <p><strong>χ²:</strong> {{ stats.categorical_analysis.coastal_vs_flood_risk.chi2_statistic }}</p>
+                            <p><strong>p-value:</strong> {{ stats.categorical_analysis.coastal_vs_flood_risk.p_value }}</p>
+                            <p><strong>Cramer's V:</strong> {{ stats.categorical_analysis.coastal_vs_flood_risk.cramers_v }}</p>
+                            <span class="badge bg-{{ 'success' if stats.categorical_analysis.coastal_vs_flood_risk.significant else 'secondary' }}">
+                                {{ 'Significant' if stats.categorical_analysis.coastal_vs_flood_risk.significant else 'Not Significant' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h6>Region vs Heat Risk</h6>
+                            <p><strong>χ²:</strong> {{ stats.categorical_analysis.region_vs_heat_risk.chi2_statistic }}</p>
+                            <p><strong>p-value:</strong> {{ stats.categorical_analysis.region_vs_heat_risk.p_value }}</p>
+                            <p><strong>Cramer's V:</strong> {{ stats.categorical_analysis.region_vs_heat_risk.cramers_v }}</p>
+                            <span class="badge bg-{{ 'success' if stats.categorical_analysis.region_vs_heat_risk.significant else 'secondary' }}">
+                                {{ 'Significant' if stats.categorical_analysis.region_vs_heat_risk.significant else 'Not Significant' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <h5>Interpretation</h5>
+                            <ul>
+                                <li><strong>Chi-square (χ²):</strong> Tests whether two categorical variables are independent</li>
+                                <li><strong>p-value:</strong> If < 0.05, the relationship is statistically significant</li>
+                                <li><strong>Cramer's V:</strong> Measures strength of association (0-1 scale, higher = stronger)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Render all charts
+    {% if charts %}
+    Plotly.newPlot('resilienceDistChart', JSON.parse('{{ charts.resilience_distribution | safe }}').data, 
+                   JSON.parse('{{ charts.resilience_distribution | safe }}').layout);
+    
+    Plotly.newPlot('regionalCompChart', JSON.parse('{{ charts.regional_comparison | safe }}').data, 
+                   JSON.parse('{{ charts.regional_comparison | safe }}').layout);
+    
+    Plotly.newPlot('riskCompChart', JSON.parse('{{ charts.risk_comparison | safe }}').data, 
+                   JSON.parse('{{ charts.risk_comparison | safe }}').layout);
+    
+    Plotly.newPlot('adaptationPlanChart', JSON.parse('{{ charts.adaptation_plan_impact | safe }}').data, 
+                   JSON.parse('{{ charts.adaptation_plan_impact | safe }}').layout);
+    
+    Plotly.newPlot('gdpResilienceChart', JSON.parse('{{ charts.gdp_resilience_scatter | safe }}').data, 
+                   JSON.parse('{{ charts.gdp_resilience_scatter | safe }}').layout);
+    
+    Plotly.newPlot('regressionCoefChart', JSON.parse('{{ charts.regression_coefficients | safe }}').data, 
+                   JSON.parse('{{ charts.regression_coefficients | safe }}').layout);
+    
+    Plotly.newPlot('correlationHeatmap', JSON.parse('{{ charts.correlation_heatmap | safe }}').data, 
+                   JSON.parse('{{ charts.correlation_heatmap | safe }}').layout);
+    {% endif %}
+</script>
+</body>
+</html>

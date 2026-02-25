@@ -1,5 +1,12 @@
 Flask
-openai
+google-genai
 python-dotenv
 PyMuPDF
 geopy
+pandas
+numpy
+scipy
+scikit-learn
+matplotlib
+seaborn
+plotly

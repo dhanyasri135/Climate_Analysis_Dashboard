@@ -1,15 +1,118 @@
 import fitz  # PyMuPDF
 import os
-from openai import OpenAI
+from google import genai
+from google.genai import errors as genai_errors
 from dotenv import load_dotenv
 import json
 from geopy.geocoders import Nominatim
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+def parse_json_response(response_text):
+    """Extract JSON from response, handling markdown code blocks."""
+    if not response_text or response_text.strip() == '':
+        return {}
+    
+    # Remove markdown code blocks if present
+    text = response_text.strip()
+    if text.startswith('```json'):
+        text = text[7:]  # Remove ```json
+    elif text.startswith('```'):
+        text = text[3:]  # Remove ```
+    
+    if text.endswith('```'):
+        text = text[:-3]  # Remove closing ```
+    
+    text = text.strip()
+    
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        print(f"JSON parse error: {e}")
+        print(f"Response text: {text[:500]}")
+        # Return a default structure
+        return {}
+
 def extract_text(file_path):
     doc = fitz.open(file_path)
     return "\n".join([page.get_text() for page in doc])
+
+def analyze_document_complete(filepath):
+    """
+    Single API call that extracts everything: categories, city info, and insights.
+    This reduces API usage from 3 calls to 1 call per document.
+    """
+    text = extract_text(filepath)
+    prompt = f"""
+You are an expert in climate adaptation planning. Analyze the following city adaptation document and provide a comprehensive analysis.
+
+Respond ONLY in JSON format with ALL of the following sections:
+
+{{
+  "city_info": {{
+    "city": "city name",
+    "country": "country name",
+    "climate_zone": "climate zone if mentioned",
+    "population": "population if mentioned"
+  }},
+  "categories": {{
+    "Climate Risks / Natural Disasters": ["list of identified risks and disasters"],
+    "Infrastructure Systems": ["list of infrastructure systems mentioned"],
+    "Financial Sources supporting adaptation planning": ["list of financial sources"],
+    "Stakeholders involved": ["list of stakeholders"]
+  }},
+  "insights": {{
+    "strengths": ["top 3 strengths of the adaptation strategy"],
+    "gaps": ["top 3 weaknesses or missing elements"]
+  }}
+}}
+
+Document:
+{text[:5000]}
+"""
+
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+        result = parse_json_response(response.text)
+        
+        # Ensure all keys exist with defaults
+        if not result or 'city_info' not in result:
+            result = {
+                "city_info": {"city": "Unknown", "country": "Unknown", "climate_zone": "N/A", "population": "N/A"},
+                "categories": {},
+                "insights": {"strengths": [], "gaps": []}
+            }
+        
+        return result
+        
+    except genai_errors.ClientError as e:
+        if '429' in str(e) or 'RESOURCE_EXHAUSTED' in str(e):
+            return {
+                "city_info": {"city": "Unknown", "country": "Unknown", "climate_zone": "API rate limit exceeded", "population": "N/A"},
+                "categories": {"error": "API rate limit exceeded. You've reached the free tier limit of 20 requests per day."},
+                "insights": {
+                    "strengths": ["API rate limit exceeded"],
+                    "gaps": ["Please wait or upgrade your Gemini API plan"]
+                }
+            }
+        return {
+            "city_info": {"city": "Unknown", "country": "Unknown", "climate_zone": "API error", "population": "N/A"},
+            "categories": {"error": f"API error: {str(e)[:100]}"},
+            "insights": {"strengths": ["API error"], "gaps": [str(e)[:100]]}
+        }
+    except Exception as e:
+        return {
+            "city_info": {"city": "Unknown", "country": "Unknown", "climate_zone": "Error", "population": "N/A"},
+            "categories": {"error": f"Unexpected error: {str(e)[:100]}"},
+            "insights": {"strengths": ["Error occurred"], "gaps": [str(e)[:100]]}
+        }
+
+# Keep the old functions for backward compatibility, but they now call the optimized version
+
 
 def process_document(filepath):
     text = extract_text(filepath)
@@ -35,12 +138,18 @@ Document:
 {text[:4000]}
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.2
-    )
-    return json.loads(response.choices[0].message.content)
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+        return parse_json_response(response.text)
+    except genai_errors.ClientError as e:
+        if '429' in str(e) or 'RESOURCE_EXHAUSTED' in str(e):
+            return {"error": "API rate limit exceeded. Please try again later or upgrade your API plan."}
+        return {"error": f"API error: {str(e)}"}
+    except Exception as e:
+        return {"error": f"Unexpected error: {str(e)}"}
 
 def extract_city_info(filepath):
     text = extract_text(filepath)
@@ -55,12 +164,18 @@ Extract city name, country, and if possible, climate zone and population from th
 Document:
 """ + text[:3000]
 
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.3
-    )
-    return json.loads(response.choices[0].message.content)
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+        return parse_json_response(response.text)
+    except genai_errors.ClientError as e:
+        if '429' in str(e) or 'RESOURCE_EXHAUSTED' in str(e):
+            return {"city": "Unknown", "country": "Unknown", "climate_zone": "API rate limit exceeded", "population": "N/A"}
+        return {"city": "Unknown", "country": "Unknown", "climate_zone": "API error", "population": "N/A"}
+    except Exception as e:
+        return {"city": "Unknown", "country": "Unknown", "climate_zone": "Error", "population": "N/A"}
 
 def get_llm_insights(filepath):
     text = extract_text(filepath)
@@ -76,9 +191,24 @@ Respond in this format:
 Document:
 """ + text[:4000]
 
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.4
-    )
-    return json.loads(response.choices[0].message.content)
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+        return parse_json_response(response.text)
+    except genai_errors.ClientError as e:
+        if '429' in str(e) or 'RESOURCE_EXHAUSTED' in str(e):
+            return {
+                "strengths": ["API rate limit exceeded. You've reached the free tier limit of 20 requests per day."],
+                "gaps": ["Please wait ~17 seconds or upgrade your Gemini API plan for higher limits."]
+            }
+        return {
+            "strengths": ["API error occurred"],
+            "gaps": [f"Error: {str(e)[:100]}"]
+        }
+    except Exception as e:
+        return {
+            "strengths": ["Unexpected error"],
+            "gaps": [f"Error: {str(e)[:100]}"]
+        }
