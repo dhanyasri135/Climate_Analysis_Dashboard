@@ -6,66 +6,33 @@
     <title>Statistical Analysis - Climate Adaptation</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <style>
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #3498db;
-        }
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        .chart-container {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .section-header {
-            margin-top: 40px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #3498db;
-        }
-        .correlation-item {
-            padding: 10px;
-            background: #f8f9fa;
-            border-left: 4px solid #3498db;
-            margin-bottom: 10px;
-        }
-        .nav-tabs .nav-link.active {
-            background-color: #3498db;
-            color: white;
-        }
-    </style>
 </head>
 <body>
-<div class="container-fluid">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
-            <div class="navbar-nav">
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="/">Document Analysis</a>
                 <a class="nav-link active" href="/statistics">Statistical Analysis</a>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <div class="container">
-        <h1 class="text-center mb-4">📊 Statistical Analysis: 43 Global Megacities</h1>
-        <p class="text-center text-muted mb-5">
-            Quantitative Framework for Climate Resilience Assessment
-        </p>
+<div class="container" style="max-width: 1400px;">
+    <div class="text-center mb-5">
+        <h1>📊 Statistical Analysis Dashboard</h1>
+        <p class="lead text-muted">Quantitative Framework for Climate Resilience Assessment</p>
+        <p class="text-secondary"><strong>Dataset:</strong> 43 Global Megacities • <strong>Variables:</strong> 16 Climate & Resilience Metrics</p>
+        </div>
 
         {% if error %}
         <div class="alert alert-danger" role="alert">
@@ -74,27 +41,31 @@
         {% else %}
 
         <!-- Summary Statistics Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
+        <div class="row mb-5">
+            <div class="col-md-3 mb-3">
                 <div class="stat-card text-center">
+                    <div class="stat-icon mb-2">🌆</div>
                     <div class="stat-number">{{ stats.summary_stats.total_cities }}</div>
                     <div class="stat-label">Total Megacities</div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-3">
                 <div class="stat-card text-center">
+                    <div class="stat-icon mb-2">🛡️</div>
                     <div class="stat-number">{{ stats.summary_stats.avg_resilience_score }}</div>
                     <div class="stat-label">Avg Resilience Score</div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-3">
                 <div class="stat-card text-center">
+                    <div class="stat-icon mb-2">📝</div>
                     <div class="stat-number">{{ stats.summary_stats.cities_with_plans }}</div>
                     <div class="stat-label">Cities with Plans</div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-3">
                 <div class="stat-card text-center">
+                    <div class="stat-icon mb-2">🌊</div>
                     <div class="stat-number">{{ stats.summary_stats.high_flood_risk }}</div>
                     <div class="stat-label">High Flood Risk</div>
                 </div>
@@ -105,19 +76,23 @@
         <ul class="nav nav-tabs" id="analysisTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" 
-                        data-bs-target="#overview" type="button">Overview</button>
+                        data-bs-target="#overview" type="button">🌐 Overview</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="regression-tab" data-bs-toggle="tab" 
-                        data-bs-target="#regression" type="button">Regression Analysis</button>
+                        data-bs-target="#regression" type="button">📈 Regression</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="correlation-tab" data-bs-toggle="tab" 
-                        data-bs-target="#correlation" type="button">Correlations</button>
+                        data-bs-target="#correlation" type="button">🔗 Correlations</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="categorical-tab" data-bs-toggle="tab" 
-                        data-bs-target="#categorical" type="button">Chi-Square Tests</button>
+                        data-bs-target="#categorical" type="button">🧪 Chi-Square</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="definitions-tab" data-bs-toggle="tab" 
+                        data-bs-target="#definitions" type="button">📖 Definitions</button>
             </li>
         </ul>
 
@@ -159,19 +134,20 @@
 
             <!-- Regression Tab -->
             <div class="tab-pane fade" id="regression" role="tabpanel">
-                <div class="section-header">
-                    <h3>Multiple Linear Regression Analysis</h3>
-                    <p>Target Variable: <strong>{{ stats.regression_analysis.target_variable }}</strong></p>
+                <div class="section-header mt-4">
+                    <h3>📈 Multiple Linear Regression Analysis</h3>
+                    <p class="text-muted">Target Variable: <strong>{{ stats.regression_analysis.target_variable }}</strong></p>
                 </div>
 
                 <div class="row">
                     <div class="col-md-4">
                         <div class="stat-card">
-                            <h5>R² Score</h5>
-                            <div class="stat-number" style="font-size: 2rem;">
+                            <h5 class="mb-3">🎯 Model Performance</h5>
+                            <div class="stat-number" style="font-size: 2.5rem;">
                                 {{ stats.regression_analysis.r_squared }}
                             </div>
-                            <p class="text-muted">Model Quality: {{ stats.regression_analysis.model_quality }}</p>
+                            <div class="stat-label mb-2">R² Score</div>
+                            <p class="text-muted mb-0"><small>Quality: <strong>{{ stats.regression_analysis.model_quality }}</strong></small></p>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -184,19 +160,20 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="stat-card">
-                            <h5>Regression Coefficients</h5>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Variable</th>
-                                        <th>Coefficient</th>
-                                        <th>Impact</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for coef in stats.regression_analysis.coefficients %}
-                                    <tr>
-                                        <td>{{ coef.variable }}</td>
+                            <h5 class="mb-4">📊 Regression Coefficients</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Variable</th>
+                                            <th>Coefficient</th>
+                                            <th>Impact</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for coef in stats.regression_analysis.coefficients %}
+                                        <tr>
+                                            <td><strong>{{ coef.variable }}</strong></td>
                                         <td>{{ coef.coefficient }}</td>
                                         <td>
                                             <span class="badge bg-{{ 'success' if coef.impact == 'Positive' else 'danger' }}">
@@ -204,9 +181,10 @@
                                             </span>
                                         </td>
                                     </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -214,8 +192,9 @@
 
             <!-- Correlation Tab -->
             <div class="tab-pane fade" id="correlation" role="tabpanel">
-                <div class="section-header">
-                    <h3>Correlation Analysis</h3>
+                <div class="section-header mt-4">
+                    <h3>🔗 Correlation Analysis</h3>
+                    <p class="text-muted">Exploring relationships between climate and resilience variables</p>
                 </div>
 
                 <div class="row">
@@ -229,15 +208,26 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="stat-card">
-                            <h5>Significant Correlations (|r| > 0.5)</h5>
-                            {% for corr in stats.correlation_analysis.significant_correlations %}
-                            <div class="correlation-item">
-                                <strong>{{ corr.var1 }}</strong> ↔ <strong>{{ corr.var2 }}</strong>
-                                <span class="badge bg-primary float-end">r = {{ corr.correlation }}</span>
-                                <br>
-                                <small class="text-muted">Strength: {{ corr.strength }}</small>
-                            </div>
-                            {% endfor %}
+                            <h5 class="mb-4">⭐ Significant Correlations (|r| > 0.5)</h5>
+                            {% if stats.correlation_analysis and stats.correlation_analysis.significant_correlations %}
+                                {% for corr in stats.correlation_analysis.significant_correlations %}
+                                <div class="correlation-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ corr.var1 }}</strong> ↔ <strong>{{ corr.var2 }}</strong>
+                                            <br>
+                                            <small class="text-muted">Strength: {{ corr.strength }}</small>
+                                        </div>
+                                        <span class="badge bg-primary">r = {{ corr.correlation }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <p class="mb-0">No significant correlations found (|r| > 0.5) or data is loading...</p>
+                                    <small class="text-muted">This could indicate that variables have weak linear relationships or the analysis is still processing.</small>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -245,44 +235,70 @@
 
             <!-- Categorical Analysis Tab -->
             <div class="tab-pane fade" id="categorical" role="tabpanel">
-                <div class="section-header">
-                    <h3>Chi-Square Tests & Cramer's V</h3>
+                <div class="section-header mt-4">
+                    <h3>🧪 Chi-Square Tests & Cramer's V</h3>
+                    <p class="text-muted">Testing associations between categorical variables</p>
                 </div>
 
+                {% if stats.categorical_analysis %}
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <h6>Climate Zone vs Adaptation Plan</h6>
-                            <p><strong>χ²:</strong> {{ stats.categorical_analysis.climate_zone_vs_adaptation_plan.chi2_statistic }}</p>
-                            <p><strong>p-value:</strong> {{ stats.categorical_analysis.climate_zone_vs_adaptation_plan.p_value }}</p>
-                            <p><strong>Cramer's V:</strong> {{ stats.categorical_analysis.climate_zone_vs_adaptation_plan.cramers_v }}</p>
+                    <div class="col-md-4 mb-3">
+                        <div class="stat-card h-100">
+                            <h6 class="mb-3">🌡️ Climate Zone vs Adaptation Plan</h6>
+                            {% if stats.categorical_analysis.climate_zone_vs_adaptation_plan %}
+                            <div class="mb-2">
+                                <strong>χ²:</strong> <span class="text-muted">{{ stats.categorical_analysis.climate_zone_vs_adaptation_plan.chi2_statistic }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>p-value:</strong> <span class="text-muted">{{ stats.categorical_analysis.climate_zone_vs_adaptation_plan.p_value }}</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Cramer's V:</strong> <span class="text-muted">{{ stats.categorical_analysis.climate_zone_vs_adaptation_plan.cramers_v }}</span>
+                            </div>
                             <span class="badge bg-{{ 'success' if stats.categorical_analysis.climate_zone_vs_adaptation_plan.significant else 'secondary' }}">
                                 {{ 'Significant' if stats.categorical_analysis.climate_zone_vs_adaptation_plan.significant else 'Not Significant' }}
                             </span>
+                            {% endif %}
                         </div>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <h6>Coastal Location vs Flood Risk</h6>
-                            <p><strong>χ²:</strong> {{ stats.categorical_analysis.coastal_vs_flood_risk.chi2_statistic }}</p>
-                            <p><strong>p-value:</strong> {{ stats.categorical_analysis.coastal_vs_flood_risk.p_value }}</p>
-                            <p><strong>Cramer's V:</strong> {{ stats.categorical_analysis.coastal_vs_flood_risk.cramers_v }}</p>
+                    <div class="col-md-4 mb-3">
+                        <div class="stat-card h-100">
+                            <h6 class="mb-3">🌊 Coastal Location vs Flood Risk</h6>
+                            {% if stats.categorical_analysis.coastal_vs_flood_risk %}
+                            <div class="mb-2">
+                                <strong>χ²:</strong> <span class="text-muted">{{ stats.categorical_analysis.coastal_vs_flood_risk.chi2_statistic }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>p-value:</strong> <span class="text-muted">{{ stats.categorical_analysis.coastal_vs_flood_risk.p_value }}</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Cramer's V:</strong> <span class="text-muted">{{ stats.categorical_analysis.coastal_vs_flood_risk.cramers_v }}</span>
+                            </div>
                             <span class="badge bg-{{ 'success' if stats.categorical_analysis.coastal_vs_flood_risk.significant else 'secondary' }}">
                                 {{ 'Significant' if stats.categorical_analysis.coastal_vs_flood_risk.significant else 'Not Significant' }}
                             </span>
+                            {% endif %}
                         </div>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <h6>Region vs Heat Risk</h6>
-                            <p><strong>χ²:</strong> {{ stats.categorical_analysis.region_vs_heat_risk.chi2_statistic }}</p>
-                            <p><strong>p-value:</strong> {{ stats.categorical_analysis.region_vs_heat_risk.p_value }}</p>
-                            <p><strong>Cramer's V:</strong> {{ stats.categorical_analysis.region_vs_heat_risk.cramers_v }}</p>
+                    <div class="col-md-4 mb-3">
+                        <div class="stat-card h-100">
+                            <h6 class="mb-3">🔥 Region vs Heat Risk</h6>
+                            {% if stats.categorical_analysis.region_vs_heat_risk %}
+                            <div class="mb-2">
+                                <strong>χ²:</strong> <span class="text-muted">{{ stats.categorical_analysis.region_vs_heat_risk.chi2_statistic }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>p-value:</strong> <span class="text-muted">{{ stats.categorical_analysis.region_vs_heat_risk.p_value }}</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Cramer's V:</strong> <span class="text-muted">{{ stats.categorical_analysis.region_vs_heat_risk.cramers_v }}</span>
+                            </div>
                             <span class="badge bg-{{ 'success' if stats.categorical_analysis.region_vs_heat_risk.significant else 'secondary' }}">
                                 {{ 'Significant' if stats.categorical_analysis.region_vs_heat_risk.significant else 'Not Significant' }}
                             </span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -290,12 +306,270 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="stat-card">
-                            <h5>Interpretation</h5>
-                            <ul>
-                                <li><strong>Chi-square (χ²):</strong> Tests whether two categorical variables are independent</li>
-                                <li><strong>p-value:</strong> If < 0.05, the relationship is statistically significant</li>
-                                <li><strong>Cramer's V:</strong> Measures strength of association (0-1 scale, higher = stronger)</li>
+                            <h5 class="mb-3">📚 Interpretation Guide</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <strong>Chi-square (χ²):</strong> <span class="text-muted">Tests whether two categorical variables are independent</span>
+                                </li>
+                                <li class="mb-2">
+                                    <strong>p-value:</strong> <span class="text-muted">If < 0.05, the relationship is statistically significant</span>
+                                </li>
+                                <li class="mb-0">
+                                    <strong>Cramer's V:</strong> <span class="text-muted">Measures strength of association (0-1 scale, higher = stronger)</span>
+                                </li>
                             </ul>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>No categorical analysis data available.</strong> The chi-square tests may be loading or there was an issue processing the data.
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Definitions Tab -->
+            <div class="tab-pane fade" id="definitions" role="tabpanel">
+                <div class="section-header mt-4">
+                    <h3>📖 Definitions & Glossary</h3>
+                    <p class="text-muted">Comprehensive guide to all terms, variables, and statistical concepts used in this analysis</p>
+                </div>
+
+                <!-- Statistical Terms -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <h4 class="mb-4" style="color: #a78bfa;">📊 Statistical Terms</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">R² (R-squared)</strong>
+                                        <p class="mb-0 text-muted">Coefficient of determination. Measures how well the regression model fits the data (0-1 scale). R² = 0.95 means 95% of variance in resilience is explained by the model.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Chi-square (χ²)</strong>
+                                        <p class="mb-0 text-muted">Statistical test that determines if there's a significant association between two categorical variables. Higher values indicate stronger relationships.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">p-value</strong>
+                                        <p class="mb-0 text-muted">Probability that results occurred by chance. p < 0.05 indicates statistical significance (less than 5% chance of being random).</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Cramer's V</strong>
+                                        <p class="mb-0 text-muted">Measure of association strength for categorical variables (0-1 scale). 0.1-0.3 = weak, 0.3-0.5 = moderate, >0.5 = strong association.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Pearson Correlation (r)</strong>
+                                        <p class="mb-0 text-muted">Measures linear relationship between two continuous variables (-1 to +1). Positive = both increase together, negative = inverse relationship.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Regression Coefficient</strong>
+                                        <p class="mb-0 text-muted">Indicates how much the dependent variable changes when the independent variable increases by one unit. Shows direction and strength of relationship.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Climate Variables -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <h4 class="mb-4" style="color: #a78bfa;">🌍 Climate & Risk Variables</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Resilience Score</strong>
+                                        <p class="mb-0 text-muted">Composite measure (0-100) evaluating a city's capacity to prepare for, respond to, and recover from climate hazards. Based on infrastructure, governance, resources, and adaptation measures.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Flood Risk</strong>
+                                        <p class="mb-0 text-muted">Assessment of vulnerability to flooding events (Low/Medium/High). Considers coastal location, elevation, drainage infrastructure, and historical flood patterns.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Heat Risk</strong>
+                                        <p class="mb-0 text-muted">Exposure to extreme temperature events (Low/Medium/High). Factors include urban heat island effect, average temperatures, and heatwave frequency.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Drought Risk</strong>
+                                        <p class="mb-0 text-muted">Susceptibility to water scarcity (Low/Medium/High). Based on precipitation patterns, water supply infrastructure, and agricultural dependency.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Climate Zone</strong>
+                                        <p class="mb-0 text-muted">Geographic classification based on temperature and precipitation patterns. Categories: Tropical, Arid, Temperate, Continental, Polar.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Coastal Location</strong>
+                                        <p class="mb-0 text-muted">Binary indicator (Yes/No) of whether the city is located on a coastline, affecting vulnerability to sea-level rise and storm surges.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Socioeconomic Variables -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <h4 class="mb-4" style="color: #a78bfa;">💰 Socioeconomic Variables</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">GDP per Capita</strong>
+                                        <p class="mb-0 text-muted">Economic output per person (in thousands USD). Indicates financial resources available for climate adaptation infrastructure and emergency response.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Infrastructure Vulnerability</strong>
+                                        <p class="mb-0 text-muted">Scale assessing weakness of critical systems (1-10). Evaluates transportation, utilities, healthcare, and communication infrastructure resilience to climate impacts.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Green Space %</strong>
+                                        <p class="mb-0 text-muted">Percentage of urban area covered by vegetation. Green spaces reduce heat islands, manage stormwater, and improve air quality.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Stakeholder Engagement</strong>
+                                        <p class="mb-0 text-muted">Level of public participation in adaptation planning (Low/Medium/High). Measures community involvement in decision-making processes.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Adaptation Plan Exists</strong>
+                                        <p class="mb-0 text-muted">Binary indicator (Yes/No) of whether city has formal climate adaptation strategy. Plans typically include risk assessments and action items.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Early Warning Systems</strong>
+                                        <p class="mb-0 text-muted">Binary indicator (Yes/No) of technology/protocols for alerting populations about imminent climate hazards like floods or heatwaves.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Abbreviations -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <h4 class="mb-4" style="color: #a78bfa;">🔤 Abbreviations & Acronyms</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <strong style="color: #93c5fd;">LLM:</strong> <span class="text-muted">Large Language Model</span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <strong style="color: #93c5fd;">API:</strong> <span class="text-muted">Application Programming Interface</span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <strong style="color: #93c5fd;">GDP:</strong> <span class="text-muted">Gross Domestic Product</span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <strong style="color: #93c5fd;">χ²:</strong> <span class="text-muted">Chi-square</span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <strong style="color: #93c5fd;">R²:</strong> <span class="text-muted">R-squared (Coefficient of Determination)</span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <strong style="color: #93c5fd;">r:</strong> <span class="text-muted">Pearson Correlation Coefficient</span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <strong style="color: #93c5fd;">std:</strong> <span class="text-muted">Standard Deviation</span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <strong style="color: #93c5fd;">avg:</strong> <span class="text-muted">Average (Mean)</span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <strong style="color: #93c5fd;">N/n:</strong> <span class="text-muted">Sample Size</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interpretation Guide -->
+                <div class="row mt-4 mb-4">
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <h4 class="mb-4" style="color: #a78bfa;">💡 Interpretation Guidelines</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Correlation Strength</strong>
+                                        <ul class="text-muted mb-0 mt-2" style="padding-left: 1.25rem;">
+                                            <li>|r| < 0.3: Weak correlation</li>
+                                            <li>|r| 0.3-0.7: Moderate correlation</li>
+                                            <li>|r| > 0.7: Strong correlation</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Statistical Significance</strong>
+                                        <ul class="text-muted mb-0 mt-2" style="padding-left: 1.25rem;">
+                                            <li>p < 0.001: Highly significant (***)</li>
+                                            <li>p < 0.01: Very significant (**)</li>
+                                            <li>p < 0.05: Significant (*)</li>
+                                            <li>p ≥ 0.05: Not significant</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Model Quality (R²)</strong>
+                                        <ul class="text-muted mb-0 mt-2" style="padding-left: 1.25rem;">
+                                            <li>R² > 0.9: Excellent fit</li>
+                                            <li>R² 0.7-0.9: Good fit</li>
+                                            <li>R² 0.5-0.7: Moderate fit</li>
+                                            <li>R² < 0.5: Poor fit</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="definition-item">
+                                        <strong style="color: #93c5fd;">Effect Size (Cramer's V)</strong>
+                                        <ul class="text-muted mb-0 mt-2" style="padding-left: 1.25rem;">
+                                            <li>V < 0.1: Negligible effect</li>
+                                            <li>V 0.1-0.3: Small effect</li>
+                                            <li>V 0.3-0.5: Medium effect</li>
+                                            <li>V > 0.5: Large effect</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

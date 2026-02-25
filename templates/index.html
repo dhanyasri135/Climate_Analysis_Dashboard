@@ -1,53 +1,89 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Climate Adaptation Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <div class="container">
         <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link active" href="/">Document Analysis</a>
-            <a class="nav-link" href="/statistics">Statistical Analysis</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="/">Document Analysis</a>
+                <a class="nav-link" href="/statistics">Statistical Analysis</a>
+            </div>
         </div>
     </div>
 </nav>
 
 <div class="container">
-    <h1 class="text-center">🌍 LLM-Powered Document Analysis</h1>
-
-    <div class="alert alert-info" role="alert">
-        <strong>📊 API Usage:</strong> Gemini API free tier allows 20 requests/day. 
-        Each document uses <strong>1 API call</strong> (optimized to combine all analyses). 
-        If you hit the limit, <a href="/statistics" class="alert-link">explore the Statistical Analysis</a> 
-        which shows 43 megacities without API calls.
+    <div class="text-center mb-4">
+        <h1>🌍 LLM-Powered Document Analysis</h1>
+        <p class="lead text-muted">Analyze climate adaptation documents with AI-powered insights</p>
     </div>
 
-    <form method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="files" class="form-label">Upload one or more climate adaptation documents:</label>
-            <input class="form-control" type="file" name="files" id="files" multiple required>
+    <div class="alert alert-info" role="alert">
+        <div class="d-flex align-items-start">
+            <div class="me-3" style="font-size: 2rem;">📊</div>
+            <div>
+                <strong class="d-block mb-2">API Usage Information</strong>
+                <p class="mb-1">Gemini API free tier allows <strong>20 requests/day</strong>. Each document uses <strong>1 API call</strong> (optimized to combine all analyses).</p>
+                <p class="mb-0">💡 <em>Tip:</em> If you hit the limit, <a href="/statistics" class="alert-link fw-bold">explore the Statistical Analysis</a> which shows 43 megacities without API calls.</p>
+            </div>
         </div>
-        <button type="submit" class="btn btn-success">Analyze Document(s)</button>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        <div class="mb-4">
+            <label for="files" class="form-label">📄 Upload Climate Adaptation Documents</label>
+            <input class="form-control form-control-lg" type="file" name="files" id="files" multiple required accept=".pdf,.doc,.docx,.txt">
+            <div class="form-text mt-2">Supported formats: PDF, DOC, DOCX, TXT. You can upload multiple files at once.</div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-success btn-lg px-5">
+                <span class="me-2">🚀</span> Analyze Documents
+            </button>
+        </div>
     </form>
 
     {% if result %}
-    <hr>
-    <div class="sidebar">
-        <h4>🏙️ City Profile</h4>
-        <p><strong>City:</strong> {{ result.city_info.city }}</p>
-        <p><strong>Country:</strong> {{ result.city_info.country }}</p>
-        <p><strong>Climate Zone:</strong> {{ result.city_info.climate_zone }}</p>
-        <p><strong>Population:</strong> {{ result.city_info.population }}</p>
+    <hr class="my-5">
+    
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="sidebar">
+                <h4>🏛️ City Profile</h4>
+                <div class="profile-item">
+                    <strong>🌆 City:</strong> <span>{{ result.city_info.city }}</span>
+                </div>
+                <div class="profile-item">
+                    <strong>🇺🇳 Country:</strong> <span>{{ result.city_info.country }}</span>
+                </div>
+                <div class="profile-item">
+                    <strong>🌡️ Climate Zone:</strong> <span>{{ result.city_info.climate_zone }}</span>
+                </div>
+                <div class="profile-item">
+                    <strong>👥 Population:</strong> <span>{{ result.city_info.population }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8 mb-4">
+            <div id="map"></div>
+        </div>
     </div>
-
-    <div id="map" style="height: 300px;"></div>
+    
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="/static/map.js"></script>
     <script>
@@ -58,25 +94,61 @@
         <h2>📊 Analysis Results</h2>
         {% if result.categories.error %}
             <div class="alert alert-warning" role="alert">
-                <strong>⚠️ Error:</strong> {{ result.categories.error }}
-                <br><small>Please try again later or check the <a href="/statistics">Statistical Analysis</a> section.</small>
+                <div class="d-flex align-items-start">
+                    <div class="me-3" style="font-size: 2rem;">⚠️</div>
+                    <div>
+                        <strong class="d-block mb-2">Analysis Error</strong>
+                        <p class="mb-2">{{ result.categories.error }}</p>
+                        <small>Please try again later or check the <a href="/statistics" class="alert-link fw-bold">Statistical Analysis</a> section.</small>
+                    </div>
+                </div>
             </div>
         {% else %}
-            {% for category, items in result.categories.items() %}
-                <h4 class="category-title">{{ category }}</h4>
-                <ul>{% for sub in items %}<li>{{ sub }}</li>{% endfor %}</ul>
-            {% endfor %}
+            <div class="row">
+                {% for category, items in result.categories.items() %}
+                <div class="col-md-6 mb-4">
+                    <div class="category-card">
+                        <h4 class="category-title">{{ category }}</h4>
+                        <ul class="category-list">
+                            {% for sub in items %}
+                            <li>{{ sub }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         {% endif %}
     </div>
 
     <div class="insights">
-        <h3>🧠 LLM Insights</h3>
-        <h5>Strengths:</h5>
-        <ul>{% for s in result.insights.strengths %}<li>{{ s }}</li>{% endfor %}</ul>
-        <h5>Gaps:</h5>
-        <ul>{% for g in result.insights.gaps %}<li>{{ g }}</li>{% endfor %}</ul>
+        <h3>🧠 AI-Powered Insights</h3>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="insight-section">
+                    <h5 class="insight-title">✅ Strengths</h5>
+                    <ul class="insight-list">
+                        {% for s in result.insights.strengths %}
+                        <li>{{ s }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="insight-section">
+                    <h5 class="insight-title">🔍 Gaps & Recommendations</h5>
+                    <ul class="insight-list">
+                        {% for g in result.insights.gaps %}
+                        <li>{{ g }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
     {% endif %}
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
