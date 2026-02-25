@@ -72,19 +72,43 @@ def create_resilience_distribution(df):
     """
     Create a histogram of resilience scores
     """
-    fig = px.histogram(
-        df,
-        x='resilience_score',
-        nbins=15,
-        title='Distribution of Resilience Scores Across 43 Megacities',
-        labels={'resilience_score': 'Resilience Score'},
-        color_discrete_sequence=['#3498db']
-    )
+    # Create bins manually for better control
+    bins = pd.cut(df['resilience_score'], bins=10)
+    counts = bins.value_counts().sort_index()
+    
+    # Create bar chart from binned data
+    fig = go.Figure()
+    
+    fig.add_trace(go.Bar(
+        x=[f"{interval.left:.1f}-{interval.right:.1f}" for interval in counts.index],
+        y=counts.values,
+        marker=dict(
+            color='#3498db',
+            line=dict(color='#2c3e50', width=1.5)
+        ),
+        text=counts.values,
+        textposition='auto',
+        hovertemplate='Score Range: %{x}<br>Cities: %{y}<extra></extra>'
+    ))
     
     fig.update_layout(
-        xaxis_title='Resilience Score',
+        title='Distribution of Resilience Scores Across 43 Megacities',
+        xaxis_title='Resilience Score Range',
         yaxis_title='Number of Cities',
-        showlegend=False
+        showlegend=False,
+        height=450,
+        bargap=0.15,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(family="Inter, sans-serif", size=12),
+        xaxis=dict(
+            tickangle=-45,
+            gridcolor='rgba(255,255,255,0.1)'
+        ),
+        yaxis=dict(
+            gridcolor='rgba(255,255,255,0.1)',
+            rangemode='tozero'
+        )
     )
     
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)

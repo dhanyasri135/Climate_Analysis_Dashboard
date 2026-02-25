@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Dashboard - Climate Adaptation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .variable-group {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .variable-group h6 {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .variable-checkbox {
+            margin: 5px 0;
+        }
+        .variable-checkbox label {
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .selected-vars-box {
+            background: white;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 150px;
+            margin-bottom: 20px;
+        }
+        .analysis-type-selector {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .results-box {
+            background: white;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        .btn-calculate {
+            font-size: 18px;
+            padding: 12px 40px;
+            font-weight: 600;
+        }
+        .variable-badge {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 13px;
+        }
+        .variable-badge .remove-btn {
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .stat-result-table {
+            margin-top: 15px;
+        }
+        .significance-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .sig-yes {
+            background: #d4edda;
+            color: #155724;
+        }
+        .sig-no {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Document Analysis</a>
+                <a class="nav-link" href="/statistics">Statistical Analysis</a>
+                <a class="nav-link active" href="/dashboard">Interactive Dashboard</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container" style="max-width: 1600px;">
+    <div class="text-center mb-4">
+        <h1>📊 Interactive Statistical Dashboard</h1>
+        <p class="lead text-muted">Select variables and perform custom correlation or chi-square analysis</p>
+    </div>
+
+    <div class="row">
+        <!-- Left Column: Variable Selection -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📋 Select Variables</h5>
+                </div>
+                <div class="card-body" style="max-height: 700px; overflow-y: auto;">
+                    
+                    <!-- Region Variables -->
+                    <div class="variable-group">
+                        <h6>🌍 Region</h6>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Reg_Africa" value="Reg_Africa" class="form-check-input">
+                            <label for="Reg_Africa" class="form-check-label ms-1">Africa</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Reg_Asia" value="Reg_Asia" class="form-check-input">
+                            <label for="Reg_Asia" class="form-check-label ms-1">Asia</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Reg_Europe" value="Reg_Europe" class="form-check-input">
+                            <label for="Reg_Europe" class="form-check-label ms-1">Europe</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Reg_Middle_East" value="Reg_Middle_East" class="form-check-input">
+                            <label for="Reg_Middle_East" class="form-check-label ms-1">Middle East</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Reg_North_America" value="Reg_North_America" class="form-check-input">
+                            <label for="Reg_North_America" class="form-check-label ms-1">North America</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Reg_South_America" value="Reg_South_America" class="form-check-input">
+                            <label for="Reg_South_America" class="form-check-label ms-1">South America</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Reg_South_Asia" value="Reg_South_Asia" class="form-check-input">
+                            <label for="Reg_South_Asia" class="form-check-label ms-1">South Asia</label>
+                        </div>
+                    </div>
+
+                    <!-- Plan Type Variables -->
+                    <div class="variable-group">
+                        <h6>📝 Plan Type</h6>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Plan_Adaptation" value="Plan_Adaptation" class="form-check-input">
+                            <label for="Plan_Adaptation" class="form-check-label ms-1">Adaptation Plan</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Plan_AM" value="Plan_AM" class="form-check-input">
+                            <label for="Plan_AM" class="form-check-label ms-1">Adaptation & Mitigation Plan</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Plan_Mitigation" value="Plan_Mitigation" class="form-check-input">
+                            <label for="Plan_Mitigation" class="form-check-label ms-1">Mitigation Plan</label>
+                        </div>
+                    </div>
+
+                    <!-- Infrastructure Variables -->
+                    <div class="variable-group">
+                        <h6>🏗️ Infrastructure</h6>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_Elec_Grid" value="Infra_Elec_Grid" class="form-check-input">
+                            <label for="Infra_Elec_Grid" class="form-check-label ms-1">Electricity Grid</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_DWT" value="Infra_DWT" class="form-check-input">
+                            <label for="Infra_DWT" class="form-check-label ms-1">Drinking Water Treatment</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_WWT" value="Infra_WWT" class="form-check-input">
+                            <label for="Infra_WWT" class="form-check-label ms-1">Waste Water Treatment</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_T_PT" value="Infra_T_PT" class="form-check-input">
+                            <label for="Infra_T_PT" class="form-check-label ms-1">Public Transport</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_EV" value="Infra_EV" class="form-check-input">
+                            <label for="Infra_EV" class="form-check-label ms-1">EV Charging</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_CH" value="Infra_CH" class="form-check-input">
+                            <label for="Infra_CH" class="form-check-label ms-1">Car/Highway</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_Green" value="Infra_Green" class="form-check-input">
+                            <label for="Infra_Green" class="form-check-label ms-1">Green Infrastructure</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_WM" value="Infra_WM" class="form-check-input">
+                            <label for="Infra_WM" class="form-check-label ms-1">Waste Management</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_BU" value="Infra_BU" class="form-check-input">
+                            <label for="Infra_BU" class="form-check-label ms-1">Building Upgrades</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Infra_Other" value="Infra_Other" class="form-check-input">
+                            <label for="Infra_Other" class="form-check-label ms-1">Other Infrastructure</label>
+                        </div>
+                    </div>
+
+                    <!-- Climate Risks Variables -->
+                    <div class="variable-group">
+                        <h6>🌡️ Climate Risks</h6>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_SLR" value="CR_SLR" class="form-check-input">
+                            <label for="CR_SLR" class="form-check-label ms-1">Sea Level Rise</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_D" value="CR_D" class="form-check-input">
+                            <label for="CR_D" class="form-check-label ms-1">Drought</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_PV" value="CR_PV" class="form-check-input">
+                            <label for="CR_PV" class="form-check-label ms-1">Precipitation Variability</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_IFH" value="CR_IFH" class="form-check-input">
+                            <label for="CR_IFH" class="form-check-label ms-1">Increased Frequency & Intensity of Heat</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_EPF" value="CR_EPF" class="form-check-input">
+                            <label for="CR_EPF" class="form-check-label ms-1">Extreme Precipitation & Inland Flooding</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_AirPol" value="CR_AirPol" class="form-check-input">
+                            <label for="CR_AirPol" class="form-check-label ms-1">Air Pollution</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_WaterPol" value="CR_WaterPol" class="form-check-input">
+                            <label for="CR_WaterPol" class="form-check-label ms-1">Water Pollution</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_Pol" value="CR_Pol" class="form-check-input">
+                            <label for="CR_Pol" class="form-check-label ms-1">Pollution</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_UHI" value="CR_UHI" class="form-check-input">
+                            <label for="CR_UHI" class="form-check-label ms-1">Urban Heat Islands</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="CR_Other" value="CR_Other" class="form-check-input">
+                            <label for="CR_Other" class="form-check-label ms-1">Other Climate Risk</label>
+                        </div>
+                    </div>
+
+                    <!-- Natural Disasters Variables -->
+                    <div class="variable-group">
+                        <h6>⚠️ Natural Disasters</h6>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="ND_EQ" value="ND_EQ" class="form-check-input">
+                            <label for="ND_EQ" class="form-check-label ms-1">Earthquake</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="ND_HC" value="ND_HC" class="form-check-input">
+                            <label for="ND_HC" class="form-check-label ms-1">Hurricane</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="ND_D" value="ND_D" class="form-check-input">
+                            <label for="ND_D" class="form-check-label ms-1">Droughts</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="ND_FER" value="ND_FER" class="form-check-input">
+                            <label for="ND_FER" class="form-check-label ms-1">Flooding/Extreme Rainfall</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="ND_Other" value="ND_Other" class="form-check-input">
+                            <label for="ND_Other" class="form-check-label ms-1">Other Hazards</label>
+                        </div>
+                    </div>
+
+                    <!-- Financial Support Variables -->
+                    <div class="variable-group">
+                        <h6>💰 Financial Support</h6>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="FN_NG" value="FN_NG" class="form-check-input">
+                            <label for="FN_NG" class="form-check-label ms-1">National Government</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="FN_SNG" value="FN_SNG" class="form-check-input">
+                            <label for="FN_SNG" class="form-check-label ms-1">Sub National Government</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="FN_LG" value="FN_LG" class="form-check-input">
+                            <label for="FN_LG" class="form-check-label ms-1">Local Government (City)</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="FN_PSC" value="FN_PSC" class="form-check-input">
+                            <label for="FN_PSC" class="form-check-label ms-1">Private Sector Corporations</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="FN_CN" value="FN_CN" class="form-check-input">
+                            <label for="FN_CN" class="form-check-label ms-1">CSO/NGO - International and Local</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="FN_IP" value="FN_IP" class="form-check-input">
+                            <label for="FN_IP" class="form-check-label ms-1">Individuals/Citizens and Public Sector</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="FN_In_NG" value="FN_In_NG" class="form-check-input">
+                            <label for="FN_In_NG" class="form-check-label ms-1">Institutions - National/Global</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="FN_Other" value="FN_Other" class="form-check-input">
+                            <label for="FN_Other" class="form-check-label ms-1">Other Financial Support</label>
+                        </div>
+                    </div>
+
+                    <!-- Climate Report Variables -->
+                    <div class="variable-group">
+                        <h6>📄 Climate Report</h6>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Rep_Yes" value="Rep_Yes" class="form-check-input">
+                            <label for="Rep_Yes" class="form-check-label ms-1">Has Climate Report</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="Rep_No" value="Rep_No" class="form-check-input">
+                            <label for="Rep_No" class="form-check-label ms-1">No Climate Report</label>
+                        </div>
+                    </div>
+
+                    <!-- Stakeholders Variables -->
+                    <div class="variable-group">
+                        <h6>🤝 Stakeholders</h6>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_No" value="SH_No" class="form-check-input">
+                            <label for="SH_No" class="form-check-label ms-1">National Government</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_SNG" value="SH_SNG" class="form-check-input">
+                            <label for="SH_SNG" class="form-check-label ms-1">Sub National Government</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_LG" value="SH_LG" class="form-check-input">
+                            <label for="SH_LG" class="form-check-label ms-1">Local Government (City)</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_PSC" value="SH_PSC" class="form-check-input">
+                            <label for="SH_PSC" class="form-check-label ms-1">Private Sector Corporations</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_CN_I" value="SH_CN_I" class="form-check-input">
+                            <label for="SH_CN_I" class="form-check-label ms-1">CSO/NGO - International</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_CN_LN" value="SH_CN_LN" class="form-check-input">
+                            <label for="SH_CN_LN" class="form-check-label ms-1">CSO/NGO - Local/Small</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_IC" value="SH_IC" class="form-check-input">
+                            <label for="SH_IC" class="form-check-label ms-1">Individuals/Citizens</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_I_NG" value="SH_I_NG" class="form-check-input">
+                            <label for="SH_I_NG" class="form-check-label ms-1">Institutions - National/Global</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_AS" value="SH_AS" class="form-check-input">
+                            <label for="SH_AS" class="form-check-label ms-1">Academic/Scientific</label>
+                        </div>
+                        <div class="variable-checkbox">
+                            <input type="checkbox" id="SH_Other" value="SH_Other" class="form-check-input">
+                            <label for="SH_Other" class="form-check-label ms-1">Other Stakeholders</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Analysis and Results -->
+        <div class="col-lg-8">
+            <!-- Selected Variables Display -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">✓ Selected Variables (<span id="selected-count">0</span>)</h5>
+                </div>
+                <div class="card-body selected-vars-box" id="selected-vars-display">
+                    <p class="text-muted text-center">No variables selected. Please select variables from the left panel.</p>
+                </div>
+            </div>
+
+            <!-- Analysis Type Selection -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">🔬 Analysis Type</h5>
+                </div>
+                <div class="card-body analysis-type-selector">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="analysisType" id="correlationRadio" value="correlation" checked>
+                                <label class="form-check-label" for="correlationRadio">
+                                    <strong>Correlation Analysis</strong>
+                                    <br><small class="text-muted">For numeric/binary variables - measures linear relationships</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="analysisType" id="chiSquareRadio" value="chi_square">
+                                <label class="form-check-label" for="chiSquareRadio">
+                                    <strong>Chi-Square Test</strong>
+                                    <br><small class="text-muted">For categorical variables - tests independence</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="analysisType" id="regressionRadio" value="regression">
+                                <label class="form-check-label" for="regressionRadio">
+                                    <strong>Multiple Regression</strong>
+                                    <br><small class="text-muted">Predict 1st variable from others - shows influence strength</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="analysisType" id="associationRadio" value="association_rules">
+                                <label class="form-check-label" for="associationRadio">
+                                    <strong>Association Rules Mining</strong>
+                                    <br><small class="text-muted">Discover patterns - "If A, then B" relationships</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="analysisType" id="oddsRatioRadio" value="odds_ratio">
+                                <label class="form-check-label" for="oddsRatioRadio">
+                                    <strong>Odds Ratio Analysis</strong>
+                                    <br><small class="text-muted">Measure association strength between binary variables</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button id="calculateBtn" class="btn btn-primary btn-lg btn-calculate" disabled>
+                            📊 Calculate Statistics
+                        </button>
+                        <button id="clearBtn" class="btn btn-outline-secondary btn-lg ms-2">
+                            🗑️ Clear Selection
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Display -->
+            <div class="card shadow-sm" id="results-card" style="display: none;">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">📈 Analysis Results</h5>
+                </div>
+                <div class="card-body results-box" id="results-display" style="display: block;">
+                    <!-- Results will be populated here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Track selected variables
+    let selectedVariables = new Set();
+
+    // Get all checkboxes
+    const checkboxes = document.querySelectorAll('.variable-checkbox input[type="checkbox"]');
+    const selectedVarsDisplay = document.getElementById('selected-vars-display');
+    const selectedCount = document.getElementById('selected-count');
+    const calculateBtn = document.getElementById('calculateBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const resultsCard = document.getElementById('results-card');
+    const resultsDisplay = document.getElementById('results-display');
+
+    // Add event listeners to all checkboxes
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                selectedVariables.add(this.value);
+            } else {
+                selectedVariables.delete(this.value);
+            }
+            updateSelectedDisplay();
+        });
+    });
+
+    // Clear button
+    clearBtn.addEventListener('click', function() {
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+        selectedVariables.clear();
+        updateSelectedDisplay();
+        resultsCard.style.display = 'none';
+    });
+
+    // Update the display of selected variables
+    function updateSelectedDisplay() {
+        selectedCount.textContent = selectedVariables.size;
+        
+        if (selectedVariables.size === 0) {
+            selectedVarsDisplay.innerHTML = '<p class="text-muted text-center">No variables selected. Please select variables from the left panel.</p>';
+            calculateBtn.disabled = true;
+        } else if (selectedVariables.size === 1) {
+            let html = '';
+            selectedVariables.forEach(variable => {
+                html += createVariableBadge(variable);
+            });
+            selectedVarsDisplay.innerHTML = html + '<p class="text-warning mt-2"><small>⚠️ Select at least 2 variables to perform analysis.</small></p>';
+            calculateBtn.disabled = true;
+        } else {
+            let html = '';
+            selectedVariables.forEach(variable => {
+                html += createVariableBadge(variable);
+            });
+            selectedVarsDisplay.innerHTML = html;
+            calculateBtn.disabled = false;
+        }
+    }
+
+    // Create variable badge HTML
+    function createVariableBadge(variable) {
+        const label = document.querySelector(`label[for="${variable}"]`).textContent;
+        return `<span class="variable-badge">${label}<span class="remove-btn" onclick="removeVariable('${variable}')">×</span></span>`;
+    }
+
+    // Remove a variable
+    function removeVariable(variable) {
+        selectedVariables.delete(variable);
+        document.getElementById(variable).checked = false;
+        updateSelectedDisplay();
+    }
+
+    // Calculate button click handler
+    calculateBtn.addEventListener('click', async function() {
+        const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
+        const variables = Array.from(selectedVariables);
+
+        // Show loading state
+        calculateBtn.disabled = true;
+        calculateBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Calculating...';
+        resultsDisplay.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Performing analysis...</p></div>';
+        resultsCard.style.display = 'block';
+
+        try {
+            // Make API request
+            const response = await fetch('/api/dashboard/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    variables: variables,
+                    analysis_type: analysisType
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                displayResults(data, analysisType);
+            } else {
+                resultsDisplay.innerHTML = `<div class="alert alert-danger">${data.error || 'An error occurred'}</div>`;
+            }
+        } catch (error) {
+            resultsDisplay.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+        } finally {
+            calculateBtn.disabled = false;
+            calculateBtn.innerHTML = '📊 Calculate Statistics';
+        }
+    });
+
+    // Display results based on analysis type
+    function displayResults(data, analysisType) {
+        let html = '';
+
+        if (analysisType === 'correlation') {
+            html = displayCorrelationResults(data);
+        } else if (analysisType === 'chi_square') {
+            html = displayChiSquareResults(data);
+        } else if (analysisType === 'regression') {
+            html = displayRegressionResults(data);
+        } else if (analysisType === 'association_rules') {
+            html = displayAssociationRulesResults(data);
+        } else if (analysisType === 'odds_ratio') {
+            html = displayOddsRatioResults(data);
+        }
+
+        resultsDisplay.innerHTML = html;
+    }
+
+    // Display correlation results
+    function displayCorrelationResults(data) {
+        let html = '<h5>Correlation Matrix</h5>';
+        
+        if (data.pairs && data.pairs.length > 0) {
+            html += '<div class="table-responsive"><table class="table table-bordered table-hover stat-result-table">';
+            html += '<thead class="table-light"><tr><th>Variable 1</th><th>Variable 2</th><th>Correlation (r)</th><th>Strength</th></tr></thead><tbody>';
+            
+            data.pairs.forEach(pair => {
+                const strength = Math.abs(pair.correlation) > 0.7 ? 'Strong' : 
+                                Math.abs(pair.correlation) > 0.4 ? 'Moderate' : 'Weak';
+                const colorClass = Math.abs(pair.correlation) > 0.7 ? 'table-success' : 
+                                  Math.abs(pair.correlation) > 0.4 ? 'table-warning' : '';
+                
+                html += `<tr class="${colorClass}">
+                    <td>${getVariableLabel(pair.var1)}</td>
+                    <td>${getVariableLabel(pair.var2)}</td>
+                    <td><strong>${pair.correlation.toFixed(4)}</strong></td>
+                    <td>${strength}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table></div>';
+
+            // Add interpretation
+            html += '<div class="alert alert-info mt-3">';
+            html += '<strong>Interpretation:</strong><ul>';
+            html += '<li>Values range from -1 to +1</li>';
+            html += '<li>Positive values indicate positive relationships</li>';
+            html += '<li>Negative values indicate inverse relationships</li>';
+            html += '<li>Values closer to ±1 indicate stronger relationships</li>';
+            html += '</ul></div>';
+        } else {
+            html += '<p class="text-muted">No correlation data available or all correlations are weak.</p>';
+        }
+
+        return html;
+    }
+
+    // Display chi-square results
+    function displayChiSquareResults(data) {
+        let html = '<h5>Chi-Square Test Results</h5>';
+        
+        if (data.pairs && data.pairs.length > 0) {
+            html += '<div class="table-responsive"><table class="table table-bordered table-hover stat-result-table">';
+            html += '<thead class="table-light"><tr><th>Variable 1</th><th>Variable 2</th><th>Chi² Statistic</th><th>p-value</th><th>Cramér\'s V</th><th>Significant?</th></tr></thead><tbody>';
+            
+            data.pairs.forEach(pair => {
+                const sigClass = pair.significant ? 'table-success' : 'table-light';
+                const sigBadge = pair.significant ? 
+                    '<span class="significance-badge sig-yes">Yes (p < 0.05)</span>' : 
+                    '<span class="significance-badge sig-no">No (p ≥ 0.05)</span>';
+                
+                html += `<tr class="${sigClass}">
+                    <td>${getVariableLabel(pair.var1)}</td>
+                    <td>${getVariableLabel(pair.var2)}</td>
+                    <td><strong>${pair.chi2_statistic.toFixed(4)}</strong></td>
+                    <td>${pair.p_value.toFixed(4)}</td>
+                    <td>${pair.cramers_v.toFixed(4)}</td>
+                    <td>${sigBadge}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table></div>';
+
+            // Add interpretation
+            html += '<div class="alert alert-info mt-3">';
+            html += '<strong>Interpretation:</strong><ul>';
+            html += '<li><strong>Chi² Statistic:</strong> Measures the difference between observed and expected frequencies</li>';
+            html += '<li><strong>p-value:</strong> If p < 0.05, the relationship is statistically significant</li>';
+            html += '<li><strong>Cramér\'s V:</strong> Measures association strength (0-1, higher = stronger)</li>';
+            html += '</ul></div>';
+        } else {
+            html += '<p class="text-muted">No chi-square test data available.</p>';
+        }
+
+        return html;
+    }
+
+    // Display regression results
+    function displayRegressionResults(data) {
+        let html = '<h5>Multiple Regression Analysis</h5>';
+        
+        if (data.error) {
+            html += `<div class="alert alert-warning">${data.error}</div>`;
+            return html;
+        }
+        
+        html += `<div class="alert alert-primary">
+            <strong>Model Summary:</strong><br>
+            Dependent Variable: <strong>${getVariableLabel(data.dependent_variable)}</strong><br>
+            Independent Variables: ${data.independent_variables.map(v => getVariableLabel(v)).join(', ')}<br>
+            N = ${data.n_observations} observations
+        </div>`;
+        
+        html += `<div class="row mb-3">
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6>R² Score</h6>
+                        <h3 class="text-primary">${data.r_squared.toFixed(4)}</h3>
+                        <small class="text-muted">${data.model_quality} fit</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6>RMSE</h6>
+                        <h3 class="text-info">${data.rmse.toFixed(4)}</h3>
+                        <small class="text-muted">Root Mean Square Error</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6>Intercept</h6>
+                        <h3 class="text-secondary">${data.intercept.toFixed(4)}</h3>
+                        <small class="text-muted">Model constant</small>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+        
+        if (data.coefficients && data.coefficients.length > 0) {
+            html += '<h6 class="mt-3">Coefficients (Predictor Importance)</h6>';
+            html += '<div class="table-responsive"><table class="table table-bordered table-hover stat-result-table">';
+            html += '<thead class="table-light"><tr><th>Variable</th><th>Coefficient</th><th>Impact</th><th>Magnitude</th></tr></thead><tbody>';
+            
+            data.coefficients.forEach(coef => {
+                const impactClass = coef.impact === 'Positive' ? 'text-success' : 'text-danger';
+                const rowClass = coef.magnitude > 0.5 ? 'table-warning' : '';
+                
+                html += `<tr class="${rowClass}">
+                    <td>${getVariableLabel(coef.variable)}</td>
+                    <td><strong>${coef.coefficient.toFixed(4)}</strong></td>
+                    <td class="${impactClass}">${coef.impact}</td>
+                    <td>${coef.magnitude.toFixed(4)}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table></div>';
+        }
+        
+        html += '<div class="alert alert-info mt-3">';
+        html += '<strong>Interpretation:</strong><ul>';
+        html += '<li><strong>R²:</strong> Proportion of variance explained (0-1, higher = better)</li>';
+        html += '<li><strong>Coefficients:</strong> Change in dependent variable per unit change in predictor</li>';
+        html += '<li><strong>Impact:</strong> Positive = increases dependent variable, Negative = decreases it</li>';
+        html += '</ul></div>';
+        
+        return html;
+    }
+
+    // Display association rules results
+    function displayAssociationRulesResults(data) {
+        let html = '<h5>Association Rules Mining</h5>';
+        
+        if (data.error) {
+            html += `<div class="alert alert-warning">${data.error}</div>`;
+            return html;
+        }
+        
+        html += `<div class="alert alert-primary">
+            Found <strong>${data.rules_found}</strong> association rules<br>
+            Minimum Support: ${(data.min_support * 100).toFixed(0)}% | 
+            Minimum Confidence: ${(data.min_confidence * 100).toFixed(0)}%
+        </div>`;
+        
+        if (data.rules && data.rules.length > 0) {
+            html += '<div class="table-responsive"><table class="table table-bordered table-hover stat-result-table">';
+            html += '<thead class="table-light"><tr><th>If...</th><th>Then...</th><th>Support</th><th>Confidence</th><th>Lift</th></tr></thead><tbody>';
+            
+            data.rules.forEach(rule => {
+                const confidenceClass = rule.confidence > 0.8 ? 'table-success' : 
+                                       rule.confidence > 0.6 ? 'table-warning' : '';
+                
+                html += `<tr class="${confidenceClass}">
+                    <td><strong>${getVariableLabel(rule.antecedent)}</strong></td>
+                    <td><strong>${getVariableLabel(rule.consequent)}</strong></td>
+                    <td>${(rule.support * 100).toFixed(1)}%</td>
+                    <td><strong>${(rule.confidence * 100).toFixed(1)}%</strong></td>
+                    <td>${rule.lift.toFixed(2)}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table></div>';
+            
+            html += '<div class="alert alert-info mt-3">';
+            html += '<strong>Interpretation:</strong><ul>';
+            html += '<li><strong>Support:</strong> % of cases where both variables occur together</li>';
+            html += '<li><strong>Confidence:</strong> % likelihood that consequent occurs when antecedent is present</li>';
+            html += '<li><strong>Lift:</strong> Strength of association (>1 = positive association)</li>';
+            html += '<li>Higher confidence = stronger rule</li>';
+            html += '</ul></div>';
+        } else {
+            html += '<p class="text-muted">No strong association rules found with current thresholds.</p>';
+        }
+        
+        return html;
+    }
+
+    // Display odds ratio results
+    function displayOddsRatioResults(data) {
+        let html = '<h5>Odds Ratio Analysis</h5>';
+        
+        if (data.error) {
+            html += `<div class="alert alert-warning">${data.error}</div>`;
+            return html;
+        }
+        
+        if (data.pairs && data.pairs.length > 0) {
+            html += '<div class="table-responsive"><table class="table table-bordered table-hover stat-result-table">';
+            html += '<thead class="table-light"><tr><th>Variable 1</th><th>Variable 2</th><th>Odds Ratio</th><th>95% CI</th><th>p-value</th><th>Interpretation</th></tr></thead><tbody>';
+            
+            data.pairs.forEach(pair => {
+                const sigClass = pair.significant ? 'table-success' : 'table-light';
+                const orColor = pair.odds_ratio > 1 ? 'text-success' : pair.odds_ratio < 1 ? 'text-danger' : 'text-secondary';
+                
+                html += `<tr class="${sigClass}">
+                    <td>${getVariableLabel(pair.var1)}</td>
+                    <td>${getVariableLabel(pair.var2)}</td>
+                    <td class="${orColor}"><strong>${pair.odds_ratio.toFixed(3)}</strong></td>
+                    <td>[${pair.ci_lower.toFixed(2)}, ${pair.ci_upper.toFixed(2)}]</td>
+                    <td>${pair.p_value.toFixed(4)}</td>
+                    <td><small>${pair.interpretation}</small></td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table></div>';
+            
+            html += '<div class="alert alert-info mt-3">';
+            html += '<strong>Interpretation:</strong><ul>';
+            html += '<li><strong>Odds Ratio = 1:</strong> No association between variables</li>';
+            html += '<li><strong>Odds Ratio > 1:</strong> Positive association (presence of Var1 increases odds of Var2)</li>';
+            html += '<li><strong>Odds Ratio < 1:</strong> Negative association (presence of Var1 decreases odds of Var2)</li>';
+            html += '<li><strong>95% CI:</strong> Confidence interval for odds ratio estimate</li>';
+            html += '<li>Green rows indicate statistically significant associations (p < 0.05)</li>';
+            html += '</ul></div>';
+        } else {
+            html += '<p class="text-muted">No odds ratio data available.</p>';
+        }
+        
+        return html;
+    }
+
+    // Get human-readable variable label
+    function getVariableLabel(variable) {
+        const label = document.querySelector(`label[for="${variable}"]`);
+        return label ? label.textContent : variable;
+    }
+</script>
+
+</body>
+</html>
