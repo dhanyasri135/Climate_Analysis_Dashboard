@@ -212,3 +212,56 @@ Document:
             "strengths": ["Unexpected error"],
             "gaps": [f"Error: {str(e)[:100]}"]
         }
+
+def answer_research_question(question, dataset_context=None):
+    """
+    Answer research questions about climate adaptation using the LLM.
+    Optionally includes dataset context for data-specific questions.
+    """
+    # Build context-aware prompt
+    context_info = ""
+    if dataset_context:
+        context_info = f"""
+Context: You have access to a dataset of 43 global megacities with the following information:
+- Cities from various climate zones (Tropical, Temperate, Arid, Continental)
+- Climate resilience scores and adaptation plan status
+- Population, GDP, and infrastructure quality metrics
+- Stakeholder engagement levels
+- Climate risks and mitigation strategies
+
+Dataset sample:
+{dataset_context[:1000]}
+"""
+    
+    prompt = f"""
+You are an expert AI assistant specializing in climate adaptation, urban resilience, and sustainability.
+Your role is to provide accurate, well-informed answers about:
+- Climate risks and natural disasters
+- Urban adaptation strategies
+- Resilience frameworks and methodologies
+- Climate finance and funding mechanisms
+- Infrastructure systems and green infrastructure
+- Stakeholder engagement
+- Climate science and policy
+
+{context_info}
+
+User Question: {question}
+
+Provide a clear, informative answer. If the question relates to the dataset, include specific examples or statistics when relevant.
+Keep your response concise but comprehensive (2-4 paragraphs).
+"""
+
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+        return response.text.strip()
+        
+    except genai_errors.ClientError as e:
+        if '429' in str(e) or 'RESOURCE_EXHAUSTED' in str(e):
+            return "⚠️ API rate limit exceeded. You've reached the free tier limit of 20 requests per day. Please wait or upgrade your Gemini API plan."
+        return f"⚠️ API error: {str(e)[:200]}"
+    except Exception as e:
+        return f"⚠️ An error occurred: {str(e)[:200]}"

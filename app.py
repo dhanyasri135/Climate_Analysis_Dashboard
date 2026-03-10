@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
-from extract_and_prompt import analyze_document_complete
+from extract_and_prompt import (analyze_document_complete, 
+                                answer_research_question)
 from statistical_analysis import (run_full_analysis, load_dataset, 
                                    custom_correlation_analysis, custom_chi_square_analysis,
                                    custom_regression_analysis, custom_association_rules,
@@ -104,6 +105,32 @@ def api_dashboard_analyze():
             return jsonify({"error": "Invalid analysis type"}), 400
         
         return jsonify(results)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/research")
+def research():
+    """Research terminal for asking questions about climate adaptation"""
+    return render_template("research.html")
+
+@app.route("/api/research/ask", methods=["POST"])
+def api_research_ask():
+    """API endpoint for research questions"""
+    try:
+        data = request.get_json()
+        question = data.get("question", "").strip()
+        
+        if not question:
+            return jsonify({"error": "Please provide a question"}), 400
+        
+        # Load dataset context for data-specific questions
+        df = load_dataset()
+        dataset_summary = df.head(5).to_string() if df is not None else None
+        
+        # Get answer from LLM
+        answer = answer_research_question(question, dataset_summary)
+        
+        return jsonify({"answer": answer})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

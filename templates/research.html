@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Terminal - Climate Adaptation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .chat-messages {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 500px;
+            max-height: 600px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user {
+            text-align: right;
+        }
+        .message.assistant {
+            text-align: left;
+        }
+        .message-bubble {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message.assistant .message-bubble {
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+        .message-header {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .input-area {
+            position: relative;
+        }
+        .input-area textarea {
+            border-radius: 25px;
+            padding: 15px 120px 15px 20px;
+            resize: none;
+            border: 2px solid #dee2e6;
+            font-size: 1rem;
+        }
+        .input-area textarea:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .input-area button {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            border-radius: 20px;
+            padding: 8px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .input-area button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .loading-indicator {
+            display: none;
+            text-align: left;
+            padding: 10px 0;
+        }
+        .loading-indicator.show {
+            display: block;
+        }
+        .typing-indicator {
+            display: inline-block;
+            padding: 12px 18px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+        }
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background: #6c757d;
+            display: inline-block;
+            border-radius: 50%;
+            margin-right: 4px;
+            animation: typing 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        .example-questions {
+            margin-bottom: 20px;
+        }
+        .example-btn {
+            font-size: 0.85rem;
+            margin: 5px;
+            border-radius: 20px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            transition: all 0.2s;
+        }
+        .example-btn:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+            color: #667eea;
+        }
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        .welcome-message h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .dataset-info {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #667eea30;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Document Analysis</a>
+                <a class="nav-link" href="/statistics">Statistical Analysis</a>
+                <a class="nav-link" href="/dashboard">Interactive Dashboard</a>
+                <a class="nav-link active" href="/research">Research Terminal</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container chat-container">
+    <div class="text-center mb-4">
+        <h1>🔬 Research Terminal</h1>
+        <p class="lead text-muted">Ask questions about climate adaptation and urban resilience</p>
+    </div>
+
+    <div class="dataset-info">
+        <div class="d-flex align-items-center">
+            <div class="me-3" style="font-size: 1.5rem;">📚</div>
+            <div>
+                <strong>Knowledge Base:</strong> Climate adaptation strategies, 43 megacities dataset, urban resilience frameworks, and climate science research.
+            </div>
+        </div>
+    </div>
+
+    <div class="example-questions text-center">
+        <small class="text-muted d-block mb-2">Try asking:</small>
+        <button class="btn example-btn" onclick="askExample('What are the main climate risks facing coastal megacities?')">
+            What are the main climate risks facing coastal megacities?
+        </button>
+        <button class="btn example-btn" onclick="askExample('How do cities finance climate adaptation projects?')">
+            How do cities finance climate adaptation projects?
+        </button>
+        <button class="btn example-btn" onclick="askExample('What is the difference between climate mitigation and adaptation?')">
+            Mitigation vs. Adaptation?
+        </button>
+        <button class="btn example-btn" onclick="askExample('Which cities in our dataset have the highest climate resilience scores?')">
+            Top resilient cities?
+        </button>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+        <div class="welcome-message">
+            <h3>👋 Welcome to the Research Terminal</h3>
+            <p>I'm your AI research assistant for climate adaptation and urban resilience.</p>
+            <p>Ask me anything about climate risks, adaptation strategies, city resilience, or the megacities dataset.</p>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <form id="questionForm">
+            <textarea 
+                class="form-control" 
+                id="questionInput" 
+                rows="2" 
+                placeholder="Ask a question about climate adaptation..."
+                required
+            ></textarea>
+            <button type="submit" class="btn btn-primary">
+                Send ➤
+            </button>
+        </form>
+    </div>
+
+    <div class="loading-indicator" id="loadingIndicator">
+        <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const chatMessages = document.getElementById('chatMessages');
+    const questionForm = document.getElementById('questionForm');
+    const questionInput = document.getElementById('questionInput');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    let isFirstQuestion = true;
+
+    questionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const question = questionInput.value.trim();
+        if (!question) return;
+
+        // Clear welcome message on first question
+        if (isFirstQuestion) {
+            chatMessages.innerHTML = '';
+            isFirstQuestion = false;
+        }
+
+        // Add user message
+        addMessage('user', question);
+        questionInput.value = '';
+        
+        // Show loading indicator
+        loadingIndicator.classList.add('show');
+        scrollToBottom();
+
+        try {
+            const response = await fetch('/api/research/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question: question })
+            });
+
+            const data = await response.json();
+            
+            // Hide loading indicator
+            loadingIndicator.classList.remove('show');
+
+            if (data.error) {
+                addMessage('assistant', '⚠️ ' + data.error);
+            } else {
+                addMessage('assistant', data.answer);
+            }
+        } catch (error) {
+            loadingIndicator.classList.remove('show');
+            addMessage('assistant', '⚠️ An error occurred. Please try again.');
+        }
+
+        scrollToBottom();
+    });
+
+    function addMessage(type, text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
+        
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'message-header';
+        headerDiv.textContent = type === 'user' ? 'You' : '🤖 AI Assistant';
+        
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'message-bubble';
+        bubbleDiv.textContent = text;
+        
+        messageDiv.appendChild(headerDiv);
+        messageDiv.appendChild(bubbleDiv);
+        chatMessages.appendChild(messageDiv);
+    }
+
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function askExample(question) {
+        questionInput.value = question;
+        questionInput.focus();
+    }
+
+    // Auto-resize textarea
+    questionInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+    });
+
+    // Enter to submit, Shift+Enter for newline
+    questionInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            questionForm.dispatchEvent(new Event('submit'));
+        }
+    });
+</script>
+</body>
+</html>
