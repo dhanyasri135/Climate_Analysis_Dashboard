@@ -10,85 +10,194 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .variable-group {
-            background: #f8f9fa;
-            border-radius: 8px;
+        .dashboard-page {
+            background: var(--bg-gradient-soft);
+            color: var(--text-primary);
+        }
+
+        .dashboard-page .variable-group {
+            background: var(--surface-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             padding: 15px;
             margin-bottom: 15px;
         }
-        .variable-group h6 {
-            font-weight: 600;
+
+        .dashboard-page .variable-group h6 {
+            font-weight: 700;
             margin-bottom: 10px;
-            color: #2c3e50;
+            color: var(--text-primary);
         }
-        .variable-checkbox {
-            margin: 5px 0;
+
+        .dashboard-page .variable-checkbox {
+            margin: 6px 0;
+            color: var(--text-secondary);
         }
-        .variable-checkbox label {
+
+        .dashboard-page .variable-checkbox label {
             cursor: pointer;
             font-size: 14px;
+            color: var(--text-secondary);
         }
-        .selected-vars-box {
-            background: white;
-            border: 2px solid #007bff;
-            border-radius: 8px;
+
+        .dashboard-page .form-check-input {
+            background-color: var(--card-bg-light);
+            border-color: var(--border-color);
+        }
+
+        .dashboard-page .form-check-input:checked {
+            background-color: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .dashboard-page .selected-vars-box {
+            background: var(--surface-muted);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-radius: 10px;
             padding: 20px;
             min-height: 150px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
+            color: var(--text-primary);
         }
-        .analysis-type-selector {
-            background: #e3f2fd;
+
+        .dashboard-page .analysis-type-selector {
+            background: var(--surface-muted);
+            border: 1px solid rgba(102, 126, 234, 0.35);
             padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            margin-bottom: 0;
         }
-        .results-box {
-            background: white;
-            border: 2px solid #28a745;
-            border-radius: 8px;
+
+        .dashboard-page .analysis-type-selector .form-check-label {
+            color: var(--text-primary);
+        }
+
+        .dashboard-page .analysis-type-selector .form-check-label strong {
+            color: #e8eefc;
+        }
+
+        .dashboard-page .results-box {
+            background: var(--surface-muted);
+            border: 1px solid rgba(56, 239, 125, 0.35);
+            border-radius: 10px;
             padding: 20px;
-            margin-top: 20px;
+            margin-top: 0;
             display: none;
+            color: var(--text-primary);
         }
-        .btn-calculate {
+
+        .dashboard-page .btn-calculate {
             font-size: 18px;
             padding: 12px 40px;
-            font-weight: 600;
+            font-weight: 700;
         }
-        .variable-badge {
+
+        .dashboard-page .variable-badge {
             display: inline-block;
-            background: #007bff;
+            background: var(--primary-gradient);
             color: white;
             padding: 5px 12px;
             border-radius: 15px;
             margin: 5px;
             font-size: 13px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
         }
-        .variable-badge .remove-btn {
+
+        .dashboard-page .variable-badge .remove-btn {
             margin-left: 8px;
             cursor: pointer;
             font-weight: bold;
         }
-        .stat-result-table {
+
+        .dashboard-page .stat-result-table {
             margin-top: 15px;
         }
-        .significance-badge {
+
+        .dashboard-page .significance-badge {
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
-        .sig-yes {
-            background: #d4edda;
-            color: #155724;
+
+        .dashboard-page .sig-yes {
+            background: rgba(56, 239, 125, 0.2);
+            color: #86efac;
+            border: 1px solid rgba(56, 239, 125, 0.35);
         }
-        .sig-no {
-            background: #f8d7da;
-            color: #721c24;
+
+        .dashboard-page .sig-no {
+            background: rgba(248, 113, 113, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(248, 113, 113, 0.35);
+        }
+
+        .dashboard-page .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .dashboard-page .card-header {
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 700;
+        }
+
+        .dashboard-page .bg-primary,
+        .dashboard-page .bg-info,
+        .dashboard-page .bg-success,
+        .dashboard-page .bg-warning {
+            background: var(--primary-gradient) !important;
+            color: #ffffff !important;
+        }
+
+        .dashboard-page .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        .dashboard-page .text-info {
+            color: #7dd3fc !important;
+        }
+
+        .dashboard-page .text-secondary,
+        .dashboard-page .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        .dashboard-page .table-light,
+        .dashboard-page .table-light > th,
+        .dashboard-page .table-light > td {
+            background: var(--card-bg-light) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .dashboard-page .table-bordered,
+        .dashboard-page .table-bordered td,
+        .dashboard-page .table-bordered th {
+            border-color: var(--border-color) !important;
+        }
+
+        .dashboard-page .alert-primary {
+            background: rgba(102, 126, 234, 0.18);
+            border: 1px solid rgba(102, 126, 234, 0.35);
+            color: #c7d2fe;
+        }
+
+        .dashboard-page .btn-outline-secondary {
+            color: var(--text-primary);
+            border-color: rgba(148, 163, 184, 0.45);
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        .dashboard-page .btn-outline-secondary:hover,
+        .dashboard-page .btn-outline-secondary:focus {
+            color: #ffffff;
+            border-color: rgba(125, 211, 252, 0.75);
+            background: rgba(56, 189, 248, 0.2);
         }
     </style>
 </head>
-<body>
+<body class="dashboard-page">
 <nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <div class="container">
         <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
@@ -109,7 +218,7 @@
 <div class="container" style="max-width: 1600px;">
     <div class="text-center mb-4">
         <h1>📊 Interactive Statistical Dashboard</h1>
-        <p class="lead text-muted">Select variables and perform custom correlation or chi-square analysis</p>
+        <p class="lead text-muted">Select variables and perform custom chi-square or regression analysis</p>
     </div>
 
     <div class="row">
@@ -405,16 +514,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="analysisType" id="correlationRadio" value="correlation" checked>
-                                <label class="form-check-label" for="correlationRadio">
-                                    <strong>Correlation Analysis</strong>
-                                    <br><small class="text-muted">For numeric/binary variables - measures linear relationships</small>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="analysisType" id="chiSquareRadio" value="chi_square">
+                                <input class="form-check-input" type="radio" name="analysisType" id="chiSquareRadio" value="chi_square" checked>
                                 <label class="form-check-label" for="chiSquareRadio">
                                     <strong>Chi-Square Test</strong>
                                     <br><small class="text-muted">For categorical variables - tests independence</small>
@@ -427,24 +527,6 @@
                                 <label class="form-check-label" for="regressionRadio">
                                     <strong>Multiple Regression</strong>
                                     <br><small class="text-muted">Predict 1st variable from others - shows influence strength</small>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="analysisType" id="associationRadio" value="association_rules">
-                                <label class="form-check-label" for="associationRadio">
-                                    <strong>Association Rules Mining</strong>
-                                    <br><small class="text-muted">Discover patterns - "If A, then B" relationships</small>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="analysisType" id="oddsRatioRadio" value="odds_ratio">
-                                <label class="form-check-label" for="oddsRatioRadio">
-                                    <strong>Odds Ratio Analysis</strong>
-                                    <br><small class="text-muted">Measure association strength between binary variables</small>
                                 </label>
                             </div>
                         </div>
@@ -588,16 +670,12 @@
     function displayResults(data, analysisType) {
         let html = '';
 
-        if (analysisType === 'correlation') {
-            html = displayCorrelationResults(data);
-        } else if (analysisType === 'chi_square') {
+        if (analysisType === 'chi_square') {
             html = displayChiSquareResults(data);
         } else if (analysisType === 'regression') {
             html = displayRegressionResults(data);
-        } else if (analysisType === 'association_rules') {
-            html = displayAssociationRulesResults(data);
-        } else if (analysisType === 'odds_ratio') {
-            html = displayOddsRatioResults(data);
+        } else {
+            html = '<div class="alert alert-warning">Unsupported analysis type selected.</div>';
         }
 
         resultsDisplay.innerHTML = html;

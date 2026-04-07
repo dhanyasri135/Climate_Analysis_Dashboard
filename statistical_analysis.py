@@ -11,6 +11,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelEncoder
 import os
 
+from utils.codebook_loader import load_codebook, get_column_groups
+
 # Get the path to the data directory
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'data', 'megacities_dataset.csv')
 
@@ -147,11 +149,38 @@ def categorical_analysis(df):
     
     # Test relationship between region and heat risk
     test3 = chi_square_test(df, 'region', 'heat_risk')
+
+    additional_test_specs = [
+        ('Adaptation Plan vs Stakeholder Engagement', 'adaptation_plan_exists', 'stakeholder_engagement'),
+        ('Infrastructure Vulnerability vs Financial Capacity', 'infrastructure_vulnerability', 'financial_capacity'),
+        ('Climate Zone vs Financial Capacity', 'climate_zone', 'financial_capacity'),
+        ('Region vs Financial Capacity', 'region', 'financial_capacity'),
+        ('Climate Zone vs Flood Risk', 'climate_zone', 'flood_risk')
+    ]
+
+    additional_significant_tests = []
+    for label, var1, var2 in additional_test_specs:
+        if var1 not in df.columns or var2 not in df.columns:
+            continue
+        try:
+            result = chi_square_test(df, var1, var2)
+            if result['significant']:
+                additional_significant_tests.append({
+                    'label': label,
+                    'var1': var1,
+                    'var2': var2,
+                    **result
+                })
+        except Exception:
+            continue
+
+    additional_significant_tests.sort(key=lambda x: x['p_value'])
     
     return {
         'climate_zone_vs_adaptation_plan': test1,
         'coastal_vs_flood_risk': test2,
-        'region_vs_heat_risk': test3
+        'region_vs_heat_risk': test3,
+        'additional_significant_tests': additional_significant_tests
     }
 
 def resilience_factors_analysis(df):
@@ -206,6 +235,98 @@ def run_full_analysis():
         'categorical_analysis': categorical_analysis(df),
         'resilience_factors': resilience_factors_analysis(df)
     }
+
+
+def get_codebook_summary():
+    """
+    Get summary statistics from the manually-coded codebook.
+    
+    Returns:
+        Dictionary with codebook coverage and indicator frequencies.
+    """
+    df = load_codebook()
+    groups = get_column_groups()
+    
+    summary = {
+        'total_cities': len(df),
+        'data_source': 'Manually coded from 43 global megacity adaptation policy documents',
+        'extraction_method': 'Document coding - binary indicators for regions, planning types, infrastructure, climate risks, finance sources, stakeholders',
+        'category_coverage': {}
+    }
+    
+    for group_name, cols in groups.items():
+        group_cols = [col for col in cols if col in df.columns]
+        if group_cols:
+            counts = df[group_cols].sum().to_dict()
+            summary['category_coverage'][group_name] = {
+                'total_indicators': len(group_cols),
+                'indicator_frequencies': {k: int(v) for k, v in counts.items()},
+            }
+    
+    return summary
+
+
+def codebook_correlation_analysis():
+    """
+    Analyze correlations between coded indicators across all 43 cities.
+    
+    Returns:
+        Dictionary with significant indicator co-occurrences.
+    """
+    df = load_codebook()
+    groups = get_column_groups()
+    
+    all_indicators = []
+    for cols in groups.values():
+        all_indicators.extend([col for col in cols if col in df.columns])
+    
+    indicator_df = df[all_indicators]
+    correlation_matrix = indicator_df.corr()
+    
+    significant_pairs = []
+    for i in range(len(correlation_matrix.columns)):
+        for j in range(i+1, len(correlation_matrix.columns)):
+            corr = correlation_matrix.iloc[i, j]
+            if abs(corr) > 0.4:
+                significant_pairs.append({
+                    'indicator_1': correlation_matrix.columns[i],
+                    'indicator_2': correlation_matrix.columns[j],
+                    'correlation': round(float(corr), 3),
+                    'strength': 'Strong' if abs(corr) > 0.7 else 'Moderate'
+                })
+    
+    significant_pairs.sort(key=lambda x: abs(x['correlation']), reverse=True)
+    
+    return {
+        'total_indicator_pairs': len(all_indicators) * (len(all_indicators) - 1) // 2,
+        'significant_correlations': significant_pairs[:20]
+    }
+
+
+def codebook_indicator_prevalence():
+    """
+    Identify which coded indicators are most prevalent across cities.
+    
+    Returns:
+        Rankings of indicators by frequency.
+    """
+    df = load_codebook()
+    groups = get_column_groups()
+    
+    prevalence = {}
+    for group_name, cols in groups.items():
+        group_cols = [col for col in cols if col in df.columns]
+        frequencies = df[group_cols].sum().sort_values(ascending=False)
+        prevalence[group_name] = {
+            col: {
+                'count': int(frequencies[col]),
+                'percentage': round(100 * frequencies[col] / len(df), 1)
+            }
+            for col in frequencies.index
+        }
+    
+    return prevalence
+
 
 if __name__ == "__main__":
     # Test the module

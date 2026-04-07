@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
-<body>
+<body class="statistics-page">
 <nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <div class="container">
         <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
@@ -44,28 +44,21 @@
 
         <!-- Summary Statistics Cards -->
         <div class="row mb-5">
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="stat-card text-center">
                     <div class="stat-icon mb-2">🌆</div>
                     <div class="stat-number">{{ stats.summary_stats.total_cities }}</div>
                     <div class="stat-label">Total Megacities</div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="stat-card text-center">
                     <div class="stat-icon mb-2">🛡️</div>
                     <div class="stat-number">{{ stats.summary_stats.avg_resilience_score }}</div>
                     <div class="stat-label">Avg Resilience Score</div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card text-center">
-                    <div class="stat-icon mb-2">📝</div>
-                    <div class="stat-number">{{ stats.summary_stats.cities_with_plans }}</div>
-                    <div class="stat-label">Cities with Plans</div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="stat-card text-center">
                     <div class="stat-icon mb-2">🌊</div>
                     <div class="stat-number">{{ stats.summary_stats.high_flood_risk }}</div>
@@ -83,10 +76,6 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="regression-tab" data-bs-toggle="tab" 
                         data-bs-target="#regression" type="button">📈 Regression</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="correlation-tab" data-bs-toggle="tab" 
-                        data-bs-target="#correlation" type="button">🔗 Correlations</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="categorical-tab" data-bs-toggle="tab" 
@@ -122,13 +111,6 @@
                     <div class="col-md-6">
                         <div class="chart-container">
                             <div id="adaptationPlanChart"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="chart-container">
-                            <div id="gdpResilienceChart"></div>
                         </div>
                     </div>
                 </div>
@@ -187,49 +169,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Correlation Tab -->
-            <div class="tab-pane fade" id="correlation" role="tabpanel">
-                <div class="section-header mt-4">
-                    <h3>🔗 Correlation Analysis</h3>
-                    <p class="text-muted">Exploring relationships between climate and resilience variables</p>
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <div class="chart-container">
-                            <div id="correlationHeatmap"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="stat-card">
-                            <h5 class="mb-4">⭐ Significant Correlations (|r| > 0.5)</h5>
-                            {% if stats.correlation_analysis and stats.correlation_analysis.significant_correlations %}
-                                {% for corr in stats.correlation_analysis.significant_correlations %}
-                                <div class="correlation-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong>{{ corr.var1 }}</strong> ↔ <strong>{{ corr.var2 }}</strong>
-                                            <br>
-                                            <small class="text-muted">Strength: {{ corr.strength }}</small>
-                                        </div>
-                                        <span class="badge bg-primary">r = {{ corr.correlation }}</span>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                <div class="alert alert-info">
-                                    <p class="mb-0">No significant correlations found (|r| > 0.5) or data is loading...</p>
-                                    <small class="text-muted">This could indicate that variables have weak linear relationships or the analysis is still processing.</small>
-                                </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -304,6 +243,35 @@
                         </div>
                     </div>
                 </div>
+
+                {% if stats.categorical_analysis.additional_significant_tests %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="stat-card">
+                            <h5 class="mb-4">⭐ Additional Significant Associations</h5>
+                            <div class="row">
+                                {% for assoc in stats.categorical_analysis.additional_significant_tests %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="p-3" style="background: rgba(15, 23, 42, 0.35); border: 1px solid var(--border-color); border-radius: 10px;">
+                                        <h6 class="mb-3">{{ assoc.label }}</h6>
+                                        <div class="mb-2">
+                                            <strong>χ²:</strong> <span class="text-muted">{{ assoc.chi2_statistic }}</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>p-value:</strong> <span class="text-muted">{{ assoc.p_value }}</span>
+                                        </div>
+                                        <div class="mb-3">
+                                            <strong>Cramer's V:</strong> <span class="text-muted">{{ assoc.cramers_v }}</span>
+                                        </div>
+                                        <span class="badge bg-success">Significant</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
                 <div class="row mt-4">
                     <div class="col-12">
@@ -584,28 +552,69 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    function applyConsistentPlotlyTheme(chartJsonText) {
+        const chart = JSON.parse(chartJsonText);
+
+        chart.layout = chart.layout || {};
+        chart.layout.paper_bgcolor = 'rgba(0,0,0,0)';
+        chart.layout.plot_bgcolor = 'rgba(0,0,0,0)';
+        chart.layout.font = Object.assign({}, chart.layout.font || {}, {
+            family: 'Inter, Segoe UI, sans-serif',
+            color: '#e2e8f0'
+        });
+        chart.layout.margin = Object.assign({ l: 50, r: 24, t: 52, b: 48 }, chart.layout.margin || {});
+
+        chart.layout.title = chart.layout.title || {};
+        if (typeof chart.layout.title === 'string') {
+            chart.layout.title = { text: chart.layout.title };
+        }
+        chart.layout.title.font = Object.assign({}, chart.layout.title.font || {}, {
+            color: '#e2e8f0',
+            size: 18
+        });
+
+        ['xaxis', 'yaxis'].forEach((axisName) => {
+            if (!chart.layout[axisName]) {
+                return;
+            }
+            chart.layout[axisName].gridcolor = chart.layout[axisName].gridcolor || 'rgba(148, 163, 184, 0.18)';
+            chart.layout[axisName].linecolor = chart.layout[axisName].linecolor || 'rgba(148, 163, 184, 0.28)';
+            chart.layout[axisName].zerolinecolor = chart.layout[axisName].zerolinecolor || 'rgba(148, 163, 184, 0.22)';
+            chart.layout[axisName].tickfont = Object.assign({}, chart.layout[axisName].tickfont || {}, {
+                color: '#cbd5e1'
+            });
+            chart.layout[axisName].title = chart.layout[axisName].title || {};
+            if (typeof chart.layout[axisName].title === 'string') {
+                chart.layout[axisName].title = { text: chart.layout[axisName].title };
+            }
+            chart.layout[axisName].title.font = Object.assign({}, chart.layout[axisName].title.font || {}, {
+                color: '#cbd5e1'
+            });
+        });
+
+        chart.layout.legend = Object.assign({}, chart.layout.legend || {}, {
+            font: Object.assign({}, (chart.layout.legend || {}).font || {}, { color: '#cbd5e1' })
+        });
+
+        return chart;
+    }
+
+    function renderThemedPlotlyChart(id, chartJsonText) {
+        const chart = applyConsistentPlotlyTheme(chartJsonText);
+        const config = {
+            responsive: true,
+            displayModeBar: false
+        };
+        Plotly.newPlot(id, chart.data, chart.layout, config);
+    }
+
     // Render all charts
     {% if charts %}
-    Plotly.newPlot('resilienceDistChart', JSON.parse('{{ charts.resilience_distribution | safe }}').data, 
-                   JSON.parse('{{ charts.resilience_distribution | safe }}').layout);
-    
-    Plotly.newPlot('regionalCompChart', JSON.parse('{{ charts.regional_comparison | safe }}').data, 
-                   JSON.parse('{{ charts.regional_comparison | safe }}').layout);
-    
-    Plotly.newPlot('riskCompChart', JSON.parse('{{ charts.risk_comparison | safe }}').data, 
-                   JSON.parse('{{ charts.risk_comparison | safe }}').layout);
-    
-    Plotly.newPlot('adaptationPlanChart', JSON.parse('{{ charts.adaptation_plan_impact | safe }}').data, 
-                   JSON.parse('{{ charts.adaptation_plan_impact | safe }}').layout);
-    
-    Plotly.newPlot('gdpResilienceChart', JSON.parse('{{ charts.gdp_resilience_scatter | safe }}').data, 
-                   JSON.parse('{{ charts.gdp_resilience_scatter | safe }}').layout);
-    
-    Plotly.newPlot('regressionCoefChart', JSON.parse('{{ charts.regression_coefficients | safe }}').data, 
-                   JSON.parse('{{ charts.regression_coefficients | safe }}').layout);
-    
-    Plotly.newPlot('correlationHeatmap', JSON.parse('{{ charts.correlation_heatmap | safe }}').data, 
-                   JSON.parse('{{ charts.correlation_heatmap | safe }}').layout);
+    renderThemedPlotlyChart('resilienceDistChart', '{{ charts.resilience_distribution | safe }}');
+    renderThemedPlotlyChart('regionalCompChart', '{{ charts.regional_comparison | safe }}');
+    renderThemedPlotlyChart('riskCompChart', '{{ charts.risk_comparison | safe }}');
+    renderThemedPlotlyChart('adaptationPlanChart', '{{ charts.adaptation_plan_impact | safe }}');
+    renderThemedPlotlyChart('regressionCoefChart', '{{ charts.regression_coefficients | safe }}');
     {% endif %}
 </script>
 </body>

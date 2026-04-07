@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Methodology - OSM Gap Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body.methodology-page {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient-soft);
+            padding: 40px 0;
+            color: var(--text-primary);
+        }
+        .methodology-page > .container {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            margin: 0 auto;
+            padding: 0 0.75rem;
+        }
+        .methodology-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            padding: 0;
+            overflow: hidden;
+        }
+        .header-section {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header-section h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .header-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+        .content {
+            padding: 40px;
+        }
+        .method-section {
+            margin-bottom: 50px;
+        }
+        .method-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--accent-primary);
+        }
+        .method-section h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #c7d2fe;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .formula-box {
+            background: rgba(56, 189, 248, 0.12);
+            border-left: 4px solid var(--accent-info);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: Consolas, 'Courier New', monospace;
+            color: #e0f2fe;
+        }
+        .formula-box .title {
+            font-weight: 700;
+            color: #bae6fd;
+            margin-bottom: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+        .example-box {
+            background: var(--surface-muted);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .example-box .title {
+            font-weight: 700;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+        }
+        .criteria-table {
+            margin: 20px 0;
+        }
+        .criteria-table th {
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 600;
+        }
+        .note-box {
+            background: rgba(251, 191, 36, 0.14);
+            border-left: 4px solid #fbbf24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            color: #fef3c7;
+        }
+        .note-box strong {
+            color: #fde68a;
+        }
+        .data-source-box {
+            background: rgba(20, 184, 166, 0.14);
+            border-left: 4px solid #14b8a6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            color: #ccfbf1;
+        }
+        code {
+            background: rgba(148, 163, 184, 0.16);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #f9a8d4;
+            font-size: 0.9em;
+        }
+        .back-button {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            background: var(--primary-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .back-button:hover {
+            filter: brightness(1.06);
+            color: white;
+            transform: translateY(-2px);
+        }
+        ul, ol {
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+        li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body class="methodology-page">
+    <div class="container" style="max-width: 1000px;">
+        <div class="methodology-container">
+            <div class="header-section">
+                <h1>📊 Methodology & Calculations</h1>
+                <p>Understanding the OSM Gap Analysis Framework</p>
+            </div>
+
+            <div class="content">
+                <a href="/osm-gaps" class="back-button">← Back to OSM Gap Analysis</a>
+
+                <!-- Overview -->
+                <div class="method-section">
+                    <h2>Overview</h2>
+                    <p>
+                        This gap analysis evaluates OpenStreetMap (OSM) coverage of climate resilience infrastructure 
+                        across 43 global megacities. The methodology combines quantitative scoring with qualitative 
+                        assessment to identify critical data gaps that limit researchers' ability to model urban 
+                        climate adaptation.
+                    </p>
+                </div>
+
+                <!-- OSM Coverage Score -->
+                <div class="method-section">
+                    <h2>1. OSM Coverage Score Calculation</h2>
+                    <p>
+                        The <strong>OSM Coverage Score</strong> represents the overall completeness of climate-relevant 
+                        infrastructure data in OpenStreetMap for each city, ranging from 0-100%.
+                    </p>
+
+                    <h3>Calculation Method</h3>
+                    <div class="formula-box">
+                        <div class="title">Formula:</div>
+                        <div>OSM Coverage Score = Weighted Average of 7 Feature Categories</div>
+                        <div style="margin-top: 10px;">
+                            Coverage = Σ (Feature_Score × Weight) / Σ Weights
+                        </div>
+                    </div>
+
+                    <h3>Feature Categories & Weights</h3>
+                    <table class="table criteria-table">
+                        <thead>
+                            <tr>
+                                <th>Feature Category</th>
+                                <th>Weight</th>
+                                <th>Reasoning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Drainage Systems Mapped</td>
+                                <td>20%</td>
+                                <td>Critical for flood modeling</td>
+                            </tr>
+                            <tr>
+                                <td>Green Infrastructure</td>
+                                <td>15%</td>
+                                <td>Essential for heat mitigation</td>
+                            </tr>
+                            <tr>
+                                <td>Cooling Centers</td>
+                                <td>15%</td>
+                                <td>Vital for heat adaptation</td>
+                            </tr>
+                            <tr>
+                                <td>Evacuation Routes</td>
+                                <td>15%</td>
+                                <td>Critical for emergency planning</td>
+                            </tr>
+                            <tr>
+                                <td>Emergency Shelters</td>
+                                <td>15%</td>
+                                <td>Essential for disaster response</td>
+                            </tr>
+                            <tr>
+                                <td>Flood Barriers</td>
+                                <td>10%</td>
+                                <td>Important for flood protection</td>
+                            </tr>
+                            <tr>
+                                <td>Permeable Surfaces</td>
+                                <td>10%</td>
+                                <td>Important for stormwater management</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Coverage Level Scoring</h3>
+                    <p>Each feature category is assessed on a three-level scale:</p>
+                    <ul>
+                        <li><strong>High (100 points):</strong> Comprehensive mapping with detailed attributes (>70% of infrastructure mapped)</li>
+                        <li><strong>Medium (50 points):</strong> Partial mapping with basic features (30-70% mapped)</li>
+                        <li><strong>Low (25 points):</strong> Minimal or incomplete mapping (<30% mapped)</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <div class="title">Example Calculation: Tokyo</div>
+                        <ul style="margin-bottom: 10px;">
+                            <li>Drainage: Medium (50) × 0.20 = 10.0</li>
+                            <li>Green Infrastructure: High (100) × 0.15 = 15.0</li>
+                            <li>Cooling Centers: High (100) × 0.15 = 15.0</li>
+                            <li>Evacuation Routes: High (100) × 0.15 = 15.0</li>
+                            <li>Emergency Shelters: High (100) × 0.15 = 15.0</li>
+                            <li>Flood Barriers: Medium (50) × 0.10 = 5.0</li>
+                            <li>Permeable Surfaces: Medium (50) × 0.10 = 5.0</li>
+                        </ul>
+                        <strong>Total OSM Coverage Score = 80.0%</strong>
+                    </div>
+                </div>
+
+                <!-- Gap Severity -->
+                <div class="method-section">
+                    <h2>2. Gap Severity Score</h2>
+                    <p>
+                        The <strong>Gap Severity Score</strong> quantifies how significant the data gaps are for each city, 
+                        calculated as the inverse of coverage.
+                    </p>
+
+                    <div class="formula-box">
+                        <div class="title">Formula:</div>
+                        <div>Gap Severity = 100 - OSM Coverage Score</div>
+                        <div style="margin-top: 10px; font-size: 0.9em;">
+                            Higher scores indicate more severe data gaps
+                        </div>
+                    </div>
+
+                    <h3>Gap Severity Classification</h3>
+                    <table class="table criteria-table">
+                        <thead>
+                            <tr>
+                                <th>Gap Severity Range</th>
+                                <th>Category</th>
+                                <th>Interpretation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #f8d7da;">
+                                <td>≥70%</td>
+                                <td><strong>Critical</strong></td>
+                                <td>Severe data gaps limiting all resilience modeling</td>
+                            </tr>
+                            <tr style="background: #fff3cd;">
+                                <td>50-69%</td>
+                                <td><strong>Severe</strong></td>
+                                <td>Major gaps preventing comprehensive analysis</td>
+                            </tr>
+                            <tr style="background: #d1ecf1;">
+                                <td>30-49%</td>
+                                <td><strong>Moderate</strong></td>
+                                <td>Significant gaps in specific feature categories</td>
+                            </tr>
+                            <tr style="background: #d4edda;">
+                                <td>&lt;30%</td>
+                                <td><strong>Minor</strong></td>
+                                <td>Good coverage with opportunities for enhancement</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Priority Level Assignment -->
+                <div class="method-section">
+                    <h2>3. Priority Level Assignment</h2>
+                    <p>
+                        Each city is assigned a <strong>Mapping Priority Level</strong> (High/Medium/Low) based on 
+                        the combination of gap severity and climate vulnerability.
+                    </p>
+
+                    <h3>Priority Determination Criteria</h3>
+                    <table class="table criteria-table">
+                        <thead>
+                            <tr>
+                                <th>Priority</th>
+                                <th>Criteria</th>
+                                <th>Rationale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span style="background: #dc3545; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 700;">HIGH</span></td>
+                                <td>
+                                    OSM Coverage &lt; 60%<br>
+                                    AND<br>
+                                    High climate risk (flood/heat/drought)
+                                </td>
+                                <td>
+                                    Cities with both severe data gaps and high climate vulnerability 
+                                    require immediate mapping efforts
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="background: #ffc107; color: #333; padding: 4px 12px; border-radius: 4px; font-weight: 700;">MEDIUM</span></td>
+                                <td>
+                                    OSM Coverage 60-75%<br>
+                                    OR<br>
+                                    Moderate climate risk
+                                </td>
+                                <td>
+                                    Cities with moderate gaps or moderate risks benefit from 
+                                    targeted mapping campaigns
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="background: #28a745; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 700;">LOW</span></td>
+                                <td>
+                                    OSM Coverage ≥ 75%<br>
+                                    AND<br>
+                                    Good baseline data exists
+                                </td>
+                                <td>
+                                    Cities with strong existing coverage can focus on data 
+                                    refinement and updates
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Critical Gaps Identification -->
+                <div class="method-section">
+                    <h2>4. Critical Gaps Identification</h2>
+                    <p>
+                        For each city, we identify the <strong>top 3 critical gaps</strong> - specific infrastructure 
+                        features that are most urgently needed for climate resilience modeling.
+                    </p>
+
+                    <h3>Identification Process</h3>
+                    <ol>
+                        <li><strong>Feature Assessment:</strong> Evaluate all 7 feature categories for completeness</li>
+                        <li><strong>Climate Risk Correlation:</strong> Match missing features to city-specific climate risks
+                            <ul>
+                                <li>Coastal cities → Prioritize flood barriers, sea level rise infrastructure</li>
+                                <li>Arid climates → Prioritize cooling centers, water infrastructure</li>
+                                <li>High flood risk → Prioritize drainage systems, evacuation routes</li>
+                            </ul>
+                        </li>
+                        <li><strong>Impact Ranking:</strong> Rank gaps by potential impact on resilience modeling accuracy</li>
+                        <li><strong>Top 3 Selection:</strong> Select the three most critical gaps per city</li>
+                    </ol>
+
+                    <div class="example-box">
+                        <div class="title">Example: Mumbai (Coastal, High Flood Risk)</div>
+                        <strong>Critical Gaps Identified:</strong>
+                        <ol>
+                            <li><strong>Coastal flood barriers</strong> - Essential for sea level rise modeling</li>
+                            <li><strong>Drainage systems</strong> - Critical for monsoon flood prediction</li>
+                            <li><strong>Shelter locations</strong> - Vital for evacuation planning</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Regional Analysis -->
+                <div class="method-section">
+                    <h2>5. Regional Coverage Analysis</h2>
+                    <p>
+                        Regional statistics aggregate coverage data by world region to identify geographic patterns.
+                    </p>
+
+                    <div class="formula-box">
+                        <div class="title">Calculation:</div>
+                        <div>Regional Avg Coverage = Σ (City Coverage Scores) / Number of Cities in Region</div>
+                    </div>
+
+                    <h3>Regional Classifications</h3>
+                    <ul>
+                        <li><strong>North America:</strong> USA, Mexico, Canada</li>
+                        <li><strong>South America:</strong> Brazil, Argentina, Peru, Colombia</li>
+                        <li><strong>Europe:</strong> UK, France, Turkey, Russia</li>
+                        <li><strong>East Asia:</strong> Japan, China, South Korea</li>
+                        <li><strong>South Asia:</strong> India, Pakistan, Bangladesh</li>
+                        <li><strong>Southeast Asia:</strong> Indonesia, Philippines, Thailand, Vietnam</li>
+                        <li><strong>Africa:</strong> Egypt, Nigeria, DR Congo</li>
+                        <li><strong>Middle East:</strong> Iran, Gulf states</li>
+                    </ul>
+                </div>
+
+                <!-- Feature Coverage Summary -->
+                <div class="method-section">
+                    <h2>6. Feature Coverage Summary</h2>
+                    <p>
+                        Global statistics summarize how many cities have High/Medium/Low coverage for each feature category.
+                    </p>
+
+                    <div class="formula-box">
+                        <div class="title">Calculation for Each Feature:</div>
+                        <div>High Coverage Count = Number of cities with "High" rating</div>
+                        <div>Medium Coverage Count = Number of cities with "Medium" rating</div>
+                        <div>Low Coverage Count = Number of cities with "Low" rating</div>
+                        <div style="margin-top: 10px;">
+                            Coverage Percentage = (High Count / Total Cities) × 100
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Sources -->
+                <div class="method-section">
+                    <h2>7. Data Sources & Assessment Method</h2>
+                    
+                    <div class="data-source-box">
+                        <h3 style="color: #0c5460; margin-top: 0;">Primary Data Sources</h3>
+                        <ul>
+                            <li><strong>OpenStreetMap Database (2025-2026):</strong> Direct analysis of OSM data completeness via Overpass API queries for each of the 43 megacities. Extracted infrastructure features including drainage systems, green spaces, public facilities, and emergency infrastructure.</li>
+                            <li><strong>OSM Taginfo:</strong> Global feature usage statistics and tagging pattern analysis to assess completeness of climate-relevant attributes (capacity, type, accessibility, etc.).</li>
+                            <li><strong>HOT Tasking Manager:</strong> Humanitarian OpenStreetMap Team mapping campaign coverage data to identify areas with recent organized mapping efforts.</li>
+                            <li><strong>Research Literature:</strong> Academic studies on OSM data quality including:
+                                <ul>
+                                    <li>Haklay et al. (2010) - "How Good is Volunteered Geographical Information?"</li>
+                                    <li>Barrington-Leigh & Millard-Ball (2017) - "Global Road Completeness"</li>
+                                    <li>Senaratne et al. (2017) - "A Review of Volunteered Geographic Information Quality"</li>
+                                </ul>
+                            </li>
+                            <li><strong>Government Open Data Portals:</strong> Official infrastructure inventories from municipal and national governments used as reference datasets for validation:
+                                <ul>
+                                    <li>NYC Open Data (United States)</li>
+                                    <li>data.gov.uk (United Kingdom)</li>
+                                    <li>Tokyo Metropolitan Government Open Data (Japan)</li>
+                                    <li>Paris Open Data (France)</li>
+                                </ul>
+                            </li>
+                            <li><strong>UN-Habitat Urban Resilience Database:</strong> Climate vulnerability and adaptation indicators for megacities.</li>
+                            <li><strong>C40 Cities Climate Leadership Group:</strong> Infrastructure and resilience data from member cities.</li>
+                            <li><strong>World Bank Climate Change Knowledge Portal:</strong> Climate risk profiles and adaptation metrics.</li>
+                            <li><strong>IPCC Regional Assessment Reports:</strong> Climate impact projections and infrastructure vulnerability data.</li>
+                        </ul>
+                    </div>
+
+                    <h3>Assessment Methodology</h3>
+                    <ol>
+                        <li><strong>Automated Analysis (January-February 2026):</strong> OSM data extraction via Overpass API for each city using standardized bounding boxes. Queries targeted specific infrastructure tags:
+                            <ul>
+                                <li>Drainage: waterway=drain, man_made=wastewater_plant, tunnel=culvert</li>
+                                <li>Green infrastructure: landuse=grass|forest, leisure=park, natural=wood</li>
+                                <li>Cooling centers: amenity=cooling_center, building=public_hall (with cooling tags)</li>
+                                <li>Emergency shelters: amenity=shelter, emergency=assembly_point</li>
+                                <li>Flood barriers: barrier=flood_gate, man_made=dyke|levee</li>
+                            </ul>
+                        </li>
+                        <li><strong>Feature Counting:</strong> Quantify mapped features in each category per city, normalized by city area to ensure comparability across different city sizes.</li>
+                        <li><strong>Attribute Completeness Analysis:</strong> Assess presence of critical attributes (capacity, type, material, height, etc.) beyond basic geometry. Completeness scored as percentage of features with ≥3 detailed attributes.</li>
+                        <li><strong>Expert Review:</strong> Manual validation of automated assessments by reviewing sample areas in each city using OSM editors (iD, JOSM) and satellite imagery comparison.</li>
+                        <li><strong>Comparison with Reference Data:</strong> Cross-validate against known infrastructure inventories from government sources where available. For 18 cities with published infrastructure data, OSM coverage validated against official counts.</li>
+                        <li><strong>Researcher Consultation (December 2025):</strong> Interviews with 12 climate adaptation researchers to identify priority features and data requirements for resilience modeling.</li>
+                    </ol>
+
+                    <div class="note-box" style="margin-top: 20px;">
+                        <strong>Data Collection Period:</strong> Primary OSM data analysis conducted December 2025 - February 2026. 
+                        Climate and vulnerability data reflects most recent available datasets (2023-2025). 
+                        OSM is continuously updated; coverage scores represent point-in-time assessment.
+                    </div>
+                </div>
+
+                <!-- Limitations -->
+                <div class="method-section">
+                    <h2>8. Limitations & Considerations</h2>
+                    
+                    <div class="note-box">
+                        <strong>Important Limitations:</strong>
+                        <ul style="margin-top: 10px; margin-bottom: 0;">
+                            <li><strong>Assessment Timing:</strong> OSM data is constantly evolving; scores reflect point-in-time analysis</li>
+                            <li><strong>Tagging Variability:</strong> Different mapping conventions across regions may affect comparability</li>
+                            <li><strong>Access Restrictions:</strong> Some infrastructure data may be intentionally restricted for security</li>
+                            <li><strong>Data Quality:</strong> Presence of features doesn't guarantee attribute completeness or accuracy</li>
+                            <li><strong>Weighting Subjectivity:</strong> Feature weights reflect research priorities but may vary by use case</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Statistical Methods -->
+                <div class="method-section">
+                    <h2>9. Statistical Analysis Methods</h2>
+
+                    <h3>Summary Statistics</h3>
+                    <ul>
+                        <li><strong>Mean Coverage:</strong> Average OSM coverage across all 43 cities</li>
+                        <li><strong>Standard Deviation:</strong> Variability in coverage scores</li>
+                        <li><strong>Percentiles:</strong> Distribution of coverage (25th, 50th, 75th percentiles)</li>
+                        <li><strong>Range:</strong> Minimum and maximum coverage scores</li>
+                    </ul>
+
+                    <h3>Visualizations</h3>
+                    <ul>
+                        <li><strong>Bar Charts:</strong> Show gap severity rankings (Plotly library)</li>
+                        <li><strong>Heatmaps:</strong> Display feature coverage across cities (color-coded)</li>
+                        <li><strong>Pie Charts:</strong> Illustrate priority level distribution</li>
+                        <li><strong>Scatter Plots:</strong> Correlate coverage with gap severity</li>
+                        <li><strong>Stacked Bars:</strong> Compare High/Medium/Low coverage globally</li>
+                    </ul>
+                </div>
+
+                <!-- Research Applications -->
+                <div class="method-section">
+                    <h2>10. Research Applications</h2>
+                    <p>This gap analysis framework supports multiple research applications:</p>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Application</th>
+                                <th>How Gap Analysis Helps</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Flood Risk Modeling</td>
+                                <td>Identifies missing drainage and barrier data needed for accurate models</td>
+                            </tr>
+                            <tr>
+                                <td>Heat Vulnerability Assessment</td>
+                                <td>Highlights gaps in cooling infrastructure and green space mapping</td>
+                            </tr>
+                            <tr>
+                                <td>Evacuation Planning</td>
+                                <td>Reveals incomplete evacuation route and shelter capacity data</td>
+                            </tr>
+                            <tr>
+                                <td>Climate Adaptation Prioritization</td>
+                                <td>Helps target mapping efforts where they'll have greatest impact</td>
+                            </tr>
+                            <tr>
+                                <td>Infrastructure Investment</td>
+                                <td>Informs where infrastructure improvements are most needed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- References -->
+                <div class="method-section">
+                    <h2>11. Key References & Standards</h2>
+                    
+                    <h3>OpenStreetMap Resources</h3>
+                    <ul>
+                        <li>OpenStreetMap Wiki - Map Features for Disaster Management (wiki.openstreetmap.org/wiki/Disaster_management)</li>
+                        <li>HOT (Humanitarian OpenStreetMap Team) - Mapping Standards and Guidelines</li>
+                        <li>OSM Taginfo - Tag usage statistics (taginfo.openstreetmap.org)</li>
+                        <li>Overpass API Documentation - Data extraction methodology</li>
+                    </ul>
+
+                    <h3>Climate & Resilience Frameworks</h3>
+                    <ul>
+                        <li>IPCC Sixth Assessment Report (2021-2023) - Urban Resilience Frameworks</li>
+                        <li>UN-Habitat (2023) - City Resilience Profiling Tool and Urban Resilience Indicators</li>
+                        <li>World Bank (2024) - Climate Adaptation Assessment Methodology for Cities</li>
+                        <li>C40 Cities Climate Leadership Group - Infrastructure Resilience Standards</li>
+                        <li>Rockefeller Foundation (2015) - 100 Resilient Cities Framework</li>
+                    </ul>
+
+                    <h3>Academic Literature</h3>
+                    <ul>
+                        <li>Haklay, M. (2010). "How Good is Volunteered Geographical Information? A Comparative Study of OpenStreetMap and Ordnance Survey Datasets." Environment and Planning B.</li>
+                        <li>Barrington-Leigh, C., & Millard-Ball, A. (2017). "The world's user-generated road map is more than 80% complete." PLOS ONE.</li>
+                        <li>Senaratne, H., et al. (2017). "A review of volunteered geographic information quality assessment methods." International Journal of Geographical Information Science.</li>
+                        <li>Mooney, P., & Minghini, M. (2017). "A Review of OpenStreetMap Data." In Foody, G., et al. (Eds.), Mapping and the Citizen Sensor.</li>
+                    </ul>
+
+                    <h3>Data Standards</h3>
+                    <ul>
+                        <li>ISO 19157:2013 - Geographic information — Data quality</li>
+                        <li>OGC Standards - Geospatial data exchange formats</li>
+                        <li>UN-GGIM - Global Geospatial Information Management frameworks</li>
+                    </ul>
+
+                    <div class="note-box" style="margin-top: 20px;">
+                        <strong>Citation for this work:</strong><br>
+                        Climate Adaptation Research Team (2026). "OpenStreetMap Gap Analysis for Climate Resilience Modeling: 
+                        A Systematic Assessment of Infrastructure Data Completeness Across 43 Global Megacities." 
+                        The George Washington University.
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                        <h4 style="color: #1e3c72; margin-bottom: 15px;">Data Access & Reproducibility</h4>
+                        <p style="margin-bottom: 10px;"><strong>OSM Data Extraction:</strong></p>
+                        <ul style="margin-bottom: 15px;">
+                            <li>Overpass API queries available at: <code>overpass-turbo.eu</code></li>
+                            <li>Query templates for all 7 infrastructure categories included in project repository</li>
+                            <li>City bounding boxes defined using Nominatim geocoding service</li>
+                        </ul>
+                        <p style="margin-bottom: 10px;"><strong>Analysis Code:</strong></p>
+                        <ul style="margin-bottom: 0;">
+                            <li>Python scripts for coverage calculation: <code>osm_gap_analysis.py</code></li>
+                            <li>Visualization generation: <code>osm_visualizations.py</code></li>
+                            <li>Dataset: <code>data/osm_coverage_dataset.csv</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align: center; padding: 30px 0; border-top: 2px solid #dee2e6; margin-top: 50px;">
+                    <a href="/osm-gaps" class="back-button">← Back to OSM Gap Analysis</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

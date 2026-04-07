@@ -1,0 +1,44 @@
+city,country,osm_coverage_score,drainage_mapped,green_infrastructure,cooling_centers,evacuation_routes,emergency_shelters,flood_barriers,permeable_surfaces,critical_gap_1,critical_gap_2,critical_gap_3,priority_level
+Tokyo,Japan,78,Medium,High,High,High,High,Medium,Medium,Subsurface drainage systems,Real-time flood sensors,Green roof coverage,Medium
+Delhi,India,42,Low,Low,Low,Medium,Low,Low,Low,Stormwater drainage network,Cooling infrastructure,Emergency shelter capacity,High
+Shanghai,China,71,Medium,Medium,High,High,Medium,Medium,Low,Permeable pavement data,Subsurface infrastructure,Green corridor networks,Medium
+São Paulo,Brazil,55,Medium,Low,Medium,Medium,Low,Low,Medium,Flood barrier locations,Drainage capacity metrics,Emergency access routes,High
+Mexico City,Mexico,48,Low,Medium,Low,Medium,Medium,Low,Low,Underground drainage systems,Green infrastructure,Evacuation route capacity,High
+Cairo,Egypt,38,Low,Low,Low,Low,Low,Low,Low,Drainage infrastructure,Cooling centers,Water retention areas,High
+Mumbai,India,45,Medium,Low,Low,Medium,Low,Low,Low,Coastal flood barriers,Drainage systems,Shelter locations,High
+Beijing,China,68,Medium,Medium,High,High,Medium,Low,Medium,Air quality monitoring sites,Green cooling corridors,Permeable surfaces,Medium
+Dhaka,Bangladesh,35,Low,Low,Low,Low,Low,Low,Low,Drainage network mapping,Flood shelter locations,Evacuation routes,High
+Osaka,Japan,82,High,High,High,High,High,Medium,High,Underground drainage capacity,Subsurface utilities,Green infrastructure,Low
+New York,USA,85,High,High,High,High,High,High,High,Subsurface infrastructure,Drainage capacity data,Green roof inventory,Low
+Karachi,Pakistan,32,Low,Low,Low,Low,Low,Low,Low,Stormwater systems,Emergency infrastructure,Cooling centers,High
+Buenos Aires,Argentina,58,Medium,Medium,Medium,Medium,Medium,Low,Medium,Drainage network details,Flood barrier systems,Green corridors,Medium
+Chongqing,China,62,Medium,Low,Medium,High,Medium,Low,Low,Permeable infrastructure,Drainage systems,Cooling networks,Medium
+Istanbul,Turkey,61,Medium,Medium,Medium,Medium,Medium,Medium,Medium,Seismic + flood infrastructure,Drainage capacity,Emergency routes,Medium
+Kolkata,India,41,Low,Low,Low,Medium,Low,Low,Low,Drainage infrastructure,Cooling centers,Shelter capacity,High
+Manila,Philippines,52,Medium,Low,Medium,Medium,Low,Low,Low,Coastal barriers,Drainage systems,Evacuation infrastructure,High
+Lagos,Nigeria,28,Low,Low,Low,Low,Low,Low,Low,All climate infrastructure,Drainage mapping,Emergency systems,High
+Rio de Janeiro,Brazil,56,Medium,Medium,Medium,Medium,Low,Low,Medium,Slope stability infrastructure,Drainage networks,Green infrastructure,High
+Tianjin,China,65,Medium,Medium,High,High,Medium,Low,Low,Subsurface drainage,Permeable surfaces,Cooling corridors,Medium
+Kinshasa,DR Congo,25,Low,Low,Low,Low,Low,Low,Low,Basic infrastructure mapping,Drainage systems,Emergency facilities,High
+Guangzhou,China,69,Medium,Medium,High,High,Medium,Medium,Low,Permeable infrastructure,Drainage capacity,Green networks,Medium
+Los Angeles,USA,81,High,High,High,High,High,Medium,High,Permeable surface inventory,Drainage capacity metrics,Green infrastructure,Low
+Moscow,Russia,72,High,Medium,High,High,High,Low,Medium,Green infrastructure,Permeable surfaces,Heat island mitigation,Medium
+Shenzhen,China,74,High,Medium,High,High,Medium,Medium,Medium,Subsurface systems,Drainage capacity,Green corridors,Medium
+Lahore,Pakistan,36,Low,Low,Low,Low,Low,Low,Low,Drainage infrastructure,Cooling systems,Emergency shelters,High
+Bangalore,India,49,Medium,Low,Medium,Medium,Low,Low,Low,Drainage networks,Green infrastructure,Cooling centers,High
+Paris,France,88,High,High,High,High,High,High,High,Subsurface utilities detail,Drainage capacity data,Green roof mapping,Low
+Bogotá,Colombia,53,Medium,Medium,Medium,Medium,Medium,Low,Medium,Slope infrastructure,Drainage systems,Green networks,Medium
+Jakarta,Indonesia,47,Medium,Low,Low,Medium,Low,Low,Low,Coastal barriers,Subsurface drainage,Emergency infrastructure,High
+Chennai,India,44,Medium,Low,Low,Medium,Low,Low,Low,Coastal flood infrastructure,Drainage capacity,Shelter mapping,High
+Lima,Peru,51,Medium,Low,Medium,Medium,Low,Low,Low,Coastal infrastructure,Drainage systems,Green infrastructure,High
+Bangkok,Thailand,57,Medium,Medium,Medium,Medium,Low,Low,Low,Subsurface drainage,Flood barrier systems,Permeable surfaces,Medium
+Seoul,South Korea,83,High,High,High,High,High,Medium,High,Subsurface infrastructure detail,Drainage capacity metrics,Green corridors,Low
+Nagoya,Japan,80,High,High,High,High,High,Medium,High,Subsurface systems,Drainage capacity,Green infrastructure,Low
+Hyderabad,India,46,Medium,Low,Medium,Medium,Low,Low,Low,Drainage infrastructure,Cooling systems,Green networks,High
+London,UK,87,High,High,High,High,High,High,High,Subsurface utility detail,Drainage capacity data,Green infrastructure,Low
+Tehran,Iran,50,Low,Medium,Medium,Medium,Medium,Low,Low,Drainage systems,Green infrastructure,Cooling networks,Medium
+Chicago,USA,84,High,High,High,High,High,High,High,Subsurface infrastructure,Drainage capacity metrics,Green roof inventory,Low
+Chengdu,China,64,Medium,Medium,Medium,High,Medium,Low,Low,Drainage systems,Permeable surfaces,Green corridors,Medium
+Nanjing,China,66,Medium,Medium,High,High,Medium,Low,Low,Subsurface drainage,Permeable infrastructure,Green networks,Medium
+Wuhan,China,63,Medium,Medium,Medium,High,Medium,Low,Low,Drainage capacity mapping,Permeable surfaces,Green corridors,Medium
+Ho Chi Minh City,Vietnam,54,Medium,Low,Medium,Medium,Low,Low,Low,Subsurface drainage,Flood barriers,Green infrastructure,Medium

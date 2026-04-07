@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Adaptation Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .city-selector-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .city-selector-wrapper {
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        .city-select {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            background: var(--card-bg-light);
+            color: var(--text-primary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .city-select:hover {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .city-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+        }
+
+        .city-select option {
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .city-profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .city-profile-title h2 {
+            font-size: 2rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .city-profile-title .city-emoji {
+            font-size: 2.5rem;
+        }
+
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .category-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-icon {
+            font-size: 1.3rem;
+        }
+
+        .indicators-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .indicators-list li {
+            padding: 0.7rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .indicators-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #38ef7d;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .indicators-list li.absent {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .indicators-list li.absent:before {
+            content: "○";
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .no-city-selected {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .no-city-selected .emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn-custom {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-secondary-custom {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary-custom:hover {
+            border-color: #667eea;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .city-stats {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
+            border: 1.5px solid rgba(56, 239, 125, 0.3);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #38ef7d;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">🌍 Climate Adaptation Dashboard</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="/">City Analysis</a>
+                <a class="nav-link" href="/statistics">Statistical Analysis</a>
+                <a class="nav-link" href="/dashboard">Interactive Dashboard</a>
+                <a class="nav-link" href="/research">Research Terminal</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="city-selector-section">
+        <h1 style="margin-bottom: 1rem;">🌐 Global Megacities Analysis</h1>
+        <p class="lead text-muted" style="margin-bottom: 2rem;">Explore climate adaptation strategies across 43 megacities</p>
+        
+        <div class="city-selector-wrapper">
+            <select id="citySelect" class="city-select" onchange="loadCityData()">
+                <option value="">📍 Select a city to explore...</option>
+            </select>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/research" class="btn-custom btn-primary-custom">
+                <span>🔬</span> Research Terminal
+            </a>
+            <a href="/dashboard" class="btn-custom btn-secondary-custom">
+                <span>📊</span> View All Analysis
+            </a>
+        </div>
+    </div>
+
+    <div id="cityContent" style="display: none;">
+        <div class="city-profile-header">
+            <div class="city-profile-title">
+                <h2>
+                    <span class="city-emoji" id="cityEmoji">🏙️</span>
+                    <span id="cityName"></span>
+                </h2>
+            </div>
+        </div>
+
+        <div class="city-stats" id="cityStats"></div>
+
+        <div id="indicatorsContainer" class="indicators-grid"></div>
+    </div>
+
+    <div id="noCitySelected" class="no-city-selected">
+        <div class="emoji">🌍</div>
+        <h3>Select a City to Begin</h3>
+        <p>Choose a megacity from the dropdown above to explore its climate adaptation strategies, infrastructure systems, financial sources, and stakeholder involvement.</p>
+    </div>
+
+
+    <hr class="my-5">
+    
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="sidebar">
+                <h4>🏛️ City Profile</h4>
+                <div class="profile-item">
+                    <strong>🌆 City:</strong> <span>{{ result.city_info.city }}</span>
+                </div>
+                <div class="profile-item">
+                    <strong>🇺🇳 Country:</strong> <span>{{ result.city_info.country }}</span>
+                </div>
+                <div class="profile-item">
+                    <strong>🌡️ Climate Zone:</strong> <span>{{ result.city_info.climate_zone }}</span>
+                </div>
+                <div class="profile-item">
+                    <strong>👥 Population:</strong> <span>{{ result.city_info.population }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8 mb-4">
+            <div id="map"></div>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="/static/map.js"></script>
+    <script>
+        setMap("{{ result.city_info.city }}, {{ result.city_info.country }}");
+    </script>
+
+    <div class="result-section">
+        <h2>📊 Analysis Results</h2>
+        {% if result.categories.error %}
+            <div class="alert alert-warning" role="alert">
+                <div class="d-flex align-items-start">
+                    <div class="me-3" style="font-size: 2rem;">⚠️</div>
+                    <div>
+                        <strong class="d-block mb-2">Analysis Error</strong>
+                        <p class="mb-2">{{ result.categories.error }}</p>
+                        <small>Please try again later or check the <a href="/statistics" class="alert-link fw-bold">Statistical Analysis</a> section.</small>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
+                {% for category, items in result.categories.items() %}
+                <div class="col-md-6 mb-4">
+                    <div class="category-card">
+                        <h4 class="category-title">{{ category }}</h4>
+                        <ul class="category-list">
+                            {% for sub in items %}
+                            <li>{{ sub }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="insights">
+        <h3>🧠 AI-Powered Insights</h3>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="insight-section">
+                    <h5 class="insight-title">✅ Strengths</h5>
+                    <ul class="insight-list">
+                        {% for s in result.insights.strengths %}
+                        <li>{{ s }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="insight-section">
+                    <h5 class="insight-title">🔍 Gaps & Recommendations</h5>
+                    <ul class="insight-list">
+                        {% for g in result.insights.gaps %}
+                        <li>{{ g }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

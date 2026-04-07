@@ -1,0 +1,244 @@
+{
+  "dataset_path": "data_exports\\megacity_multipass_dataset.csv",
+  "rows": 13836,
+  "columns": 61,
+  "top_chi_square": [
+    {
+      "feature_a": "CR_AirPol",
+      "feature_b": "Fin_In_N/G",
+      "chi2": 177.38032521445746,
+      "p_value": 1.8089406699629426e-40,
+      "dof": 1,
+      "cramers_v": 0.11322633416084542
+    },
+    {
+      "feature_a": "ND_F/ER",
+      "feature_b": "Infra_Green",
+      "chi2": 175.53445914250045,
+      "p_value": 4.576100275002521e-40,
+      "dof": 1,
+      "cramers_v": 0.11263566204173768
+    },
+    {
+      "feature_a": "ND_Other Hazards",
+      "feature_b": "Infra_Green",
+      "chi2": 151.29492006645185,
+      "p_value": 9.035014726632006e-35,
+      "dof": 1,
+      "cramers_v": 0.1045699490576187
+    },
+    {
+      "feature_a": "CR_EPIF",
+      "feature_b": "Infra_Green",
+      "chi2": 109.20118392492365,
+      "p_value": 1.4662254750710446e-25,
+      "dof": 1,
+      "cramers_v": 0.08883996867991324
+    },
+    {
+      "feature_a": "CR_Pol",
+      "feature_b": "Infra_WM",
+      "chi2": 96.42959819797129,
+      "p_value": 9.247431768544003e-23,
+      "dof": 1,
+      "cramers_v": 0.08348335651564269
+    },
+    {
+      "feature_a": "CR_WaterPol",
+      "feature_b": "Infra_Green",
+      "chi2": 84.66337070558035,
+      "p_value": 3.537435935829097e-20,
+      "dof": 1,
+      "cramers_v": 0.07822444686186339
+    },
+    {
+      "feature_a": "CR_WaterPol",
+      "feature_b": "Infra_WWT",
+      "chi2": 79.2179368079347,
+      "p_value": 5.562278411357158e-19,
+      "dof": 1,
+      "cramers_v": 0.07566699499666475
+    },
+    {
+      "feature_a": "CR_IFIH",
+      "feature_b": "SH_I/C",
+      "chi2": 76.10478511903749,
+      "p_value": 2.6900463351357845e-18,
+      "dof": 1,
+      "cramers_v": 0.07416529104640972
+    },
+    {
+      "feature_a": "CR_Other",
+      "feature_b": "Infra_Green",
+      "chi2": 75.74724916161077,
+      "p_value": 3.223999315227912e-18,
+      "dof": 1,
+      "cramers_v": 0.07399087379243857
+    },
+    {
+      "feature_a": "CR_WaterPol",
+      "feature_b": "Infra_DWT",
+      "chi2": 71.68722038155506,
+      "p_value": 2.5216041419664334e-17,
+      "dof": 1,
+      "cramers_v": 0.07198062180078489
+    },
+    {
+      "feature_a": "CR_AirPol",
+      "feature_b": "Infra_WM",
+      "chi2": 49.99313204074602,
+      "p_value": 1.5428505735967119e-12,
+      "dof": 1,
+      "cramers_v": 0.06011043852248841
+    },
+    {
+      "feature_a": "ND_F/ER",
+      "feature_b": "SH_I/C",
+      "chi2": 49.25652179127677,
+      "p_value": 2.2458543339476662e-12,
+      "dof": 1,
+      "cramers_v": 0.059665954685612706
+    },
+    {
+      "feature_a": "CR_EPIF",
+      "feature_b": "SH_I/C",
+      "chi2": 45.84329988550918,
+      "p_value": 1.2810051424214838e-11,
+      "dof": 1,
+      "cramers_v": 0.05756157373250809
+    },
+    {
+      "feature_a": "CR_Other",
+      "feature_b": "Infra_WM",
+      "chi2": 40.44747829896401,
+      "p_value": 2.0197295620661266e-10,
+      "dof": 1,
+      "cramers_v": 0.054068017870496685
+    },
+    {
+      "feature_a": "CR_UHI",
+      "feature_b": "Infra_Green",
+      "chi2": 38.635790661890134,
+      "p_value": 5.107372677763366e-10,
+      "dof": 1,
+      "cramers_v": 0.05284326283037821
+    }
+  ],
+  "regression": {
+    "r_squared": 0.011758728463407087,
+    "adj_r_squared": 0.010256407144290991,
+    "n_obs": 13836,
+    "coefficients": [
+      {
+        "term": "const",
+        "coef": 4.722499079565704,
+        "p_value": 0.0
+      },
+      {
+        "term": "Reg_North America",
+        "coef": -0.3041502401988443,
+        "p_value": 1.1216117080568647e-23
+      },
+      {
+        "term": "Reg_South America",
+        "coef": -0.20928338178306105,
+        "p_value": 2.0544305167832984e-16
+      },
+      {
+        "term": "Reg_Europe",
+        "coef": -0.25618081095465695,
+        "p_value": 3.215489272747191e-16
+      },
+      {
+        "term": "Reg_middle east",
+        "coef": -0.28669822114427584,
+        "p_value": 1.577627494459427e-15
+      },
+      {
+        "term": "Reg_South Asia",
+        "coef": -0.23957862319492046,
+        "p_value": 5.191142344561381e-15
+      },
+      {
+        "term": "Reg_East asia",
+        "coef": -0.1978826862905353,
+        "p_value": 1.4501875928802614e-06
+      },
+      {
+        "term": "Plan_Mitigation",
+        "coef": 0.08086517151070105,
+        "p_value": 0.003789866307584584
+      },
+      {
+        "term": "CR_IFIH",
+        "coef": 0.14198514835956894,
+        "p_value": 0.00740473096412725
+      },
+      {
+        "term": "CR_PV",
+        "coef": -0.40721600090520405,
+        "p_value": 0.03027433972968682
+      },
+      {
+        "term": "CR_UHI",
+        "coef": -0.12145367540600793,
+        "p_value": 0.038174355104401723
+      },
+      {
+        "term": "ND_Dr",
+        "coef": -0.16293127997035095,
+        "p_value": 0.1443091877611383
+      },
+      {
+        "term": "CR_Pol",
+        "coef": -0.04028794715302586,
+        "p_value": 0.17592948688457
+      },
+      {
+        "term": "CR_AirPol",
+        "coef": -0.0489258872163755,
+        "p_value": 0.21730140883924895
+      },
+      {
+        "term": "ND_EQ",
+        "coef": -0.11575173555912271,
+        "p_value": 0.3586112965961288
+      },
+      {
+        "term": "CR_WaterPol",
+        "coef": -0.04417734828893796,
+        "p_value": 0.4024263685314769
+      },
+      {
+        "term": "CR_EPIF",
+        "coef": 0.03481997514959536,
+        "p_value": 0.45025500305210675
+      },
+      {
+        "term": "Plan_A&M",
+        "coef": 0.020545959006179115,
+        "p_value": 0.537823200699546
+      },
+      {
+        "term": "CR_SLR",
+        "coef": 0.029096259209214687,
+        "p_value": 0.6287395140232451
+      },
+      {
+        "term": "ND_F/ER",
+        "coef": -0.012365280721913135,
+        "p_value": 0.7072898971611765
+      },
+      {
+        "term": "ND_HC",
+        "coef": -0.026991206728926034,
+        "p_value": 0.7346273546390919
+      },
+      {
+        "term": "CR_Dr",
+        "coef": 0.00831113443275346,
+        "p_value": 0.9358978061071456
+      }
+    ]
+  }
+}

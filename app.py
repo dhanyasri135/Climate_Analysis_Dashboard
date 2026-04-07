@@ -4,22 +4,111 @@ from extract_and_prompt import (analyze_document_complete,
 from statistical_analysis import (run_full_analysis, load_dataset, 
                                    custom_correlation_analysis, custom_chi_square_analysis,
                                    custom_regression_analysis, custom_association_rules,
-                                   custom_odds_ratio_analysis)
+                                   custom_odds_ratio_analysis, get_codebook_summary,
+                                   codebook_correlation_analysis, codebook_indicator_prevalence)
 from visualizations import generate_all_visualizations
+from osm_gap_analysis import (load_osm_dataset, generate_gap_analysis_report,
+                               get_city_specific_gaps, calculate_gap_severity)
+from osm_visualizations import generate_all_osm_visualizations
 import os
 import uuid
+import pandas as pd
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
+ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt"}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+def is_allowed_file(filename):
+    _, ext = os.path.splitext(filename)
+    return ext.lower() in ALLOWED_EXTENSIONS
+
+
+def get_cities_list():
+    """Load sorted city names for UI dropdown from multipass dataset (primary) or codebook (fallback)."""
+    cities = []
+
+    # Primary source: multipass chunked dataset
+    try:
+        from utils.codebook_loader import get_cities_from_multipass
+        cities = get_cities_from_multipass()
+    except Exception:
+        cities = []
+
+    # Fallback source: manually coded workbook
+    if not cities:
+        try:
+            from utils.codebook_loader import load_codebook
+            df = load_codebook()
+            cities = [
+                str(city).strip()
+                for city in df["city"].tolist()
+                if pd.notna(city) and str(city).strip()
+            ]
+        except Exception:
+            cities = []
+
+    # Fallback source: CSV dataset if codebook unavailable
+    if not cities:
+        csv_path = os.path.join("data", "megacities_dataset.csv")
+        if os.path.exists(csv_path):
+            df_csv = pd.read_csv(csv_path)
+            if "city" in df_csv.columns:
+                cities = [
+                    str(city).strip()
+                    for city in df_csv["city"].tolist()
+                    if pd.notna(city) and str(city).strip()
+                ]
+
+    # De-duplicate while preserving sorted output
+    return sorted(set(cities))
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    cities = []
+    try:
+        cities = get_cities_list()
+    except Exception:
+        # Keep landing page usable even if codebook load fails.
+        cities = []
+
     if request.method == "POST":
-        uploaded_files = request.files.getlist("files")
+        uploaded_files = [
+            f for f in request.files.getlist("files")
+            if f and f.filename and f.filename.strip()
+        ]
+
+        if not uploaded_files:
+            return render_template(
+                "index.html",
+                result=None,
+                error_message="Please select at least one file to analyze.",
+                cities=cities
+            )
+
         results = []
 
         for file in uploaded_files:
+            if not is_allowed_file(file.filename):
+                results.append({
+                    "filename": file.filename,
+                    "categories": {
+                        "error": "Unsupported file type. Please upload PDF, DOCX, or TXT files."
+                    },
+                    "city_info": {
+                        "city": "Unknown",
+                        "country": "Unknown",
+                        "climate_zone": "N/A",
+                        "population": "N/A"
+                    },
+                    "insights": {
+                        "strengths": [],
+                        "gaps": ["Unsupported file format"]
+                    }
+                })
+                continue
+
             filename = f"{uuid.uuid4()}_{file.filename}"
             filepath = os.path.join(UPLOAD_FOLDER, filename)
             file.save(filepath)
@@ -37,9 +126,9 @@ def index():
         if len(results) > 1:
             return render_template("compare.html", results=results)
         else:
-            return render_template("index.html", result=results[0])
+            return render_template("index.html", result=results[0], cities=cities)
 
-    return render_template("index.html", result=None)
+    return render_template("index.html", result=None, error_message=None, cities=cities)
 
 @app.route("/statistics")
 def statistics():
@@ -133,6 +222,99 @@ def api_research_ask():
         return jsonify({"answer": answer})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/osm-gaps")
+def osm_gaps():
+    """OSM Gap Analysis dashboard for climate resilience research"""
+    try:
+        # Load OSM coverage dataset
+        df = load_osm_dataset()
+        df = calculate_gap_severity(df)
+        
+        # Generate comprehensive gap analysis report
+        report = generate_gap_analysis_report()
+        
+        # Generate all visualizations
+        visualizations = generate_all_osm_visualizations(df, report)
+        
+        return render_template(
+            "osm_gaps.html",
+            report=report,
+            charts=visualizations
+        )
+    except Exception as e:
+        return render_template(
+            "osm_gaps.html",
+            error=str(e)
+        )
+
+@app.route("/api/osm-gaps/city/<city_name>")
+def api_osm_city_gaps(city_name):
+    """API endpoint for city-specific gap analysis"""
+    try:
+        city_data = get_city_specific_gaps(city_name)
+        if city_data is None:
+            return jsonify({"error": "City not found"}), 404
+        return jsonify(city_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/osm-methodology")
+def osm_methodology():
+    """OSM Gap Analysis Methodology and Calculations"""
+    return render_template("osm_methodology.html")
+
+@app.route("/api/codebook/summary")
+def api_codebook_summary():
+    """API endpoint for codebook summary statistics"""
+    try:
+        summary = get_codebook_summary()
+        return jsonify(summary)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/codebook/prevalence")
+def api_codebook_prevalence():
+    """API endpoint for indicator prevalence analysis"""
+    try:
+        prevalence = codebook_indicator_prevalence()
+        return jsonify(prevalence)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/codebook/correlations")
+def api_codebook_correlations():
+    """API endpoint for indicator correlation analysis"""
+    try:
+        correlations = codebook_correlation_analysis()
+        return jsonify(correlations)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/cities")
+def api_cities():
+    """API endpoint to get list of all cities in codebook"""
+    try:
+        cities = get_cities_list()
+        return jsonify({"cities": cities})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/city/<city_name>/codebook")
+def api_city_codebook(city_name):
+    """API endpoint to get city-specific analysis from multipass dataset"""
+    try:
+        from utils.codebook_loader import analyze_city_features
+        
+        # Use the new multipass analysis function
+        city_analysis = analyze_city_features(city_name)
+        
+        return jsonify(city_analysis)
+    except ValueError as e:
+        # City not found
+        return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": f"Analysis error: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

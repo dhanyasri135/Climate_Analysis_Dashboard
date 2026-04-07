@@ -10,3 +10,4 @@ scikit-learn
 matplotlib
 seaborn
 plotly
+python-docx

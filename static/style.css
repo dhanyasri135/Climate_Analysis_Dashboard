@@ -1,6 +1,7 @@
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --bg-gradient-soft: linear-gradient(160deg, #0f172a 0%, #1e293b 60%, #1f2f46 100%);
     --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     --hover-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
     --text-primary: #e2e8f0;
@@ -9,6 +10,14 @@
     --card-bg: #1e293b;
     --card-bg-light: #334155;
     --border-color: #334155;
+    --surface-elevated: rgba(51, 65, 85, 0.88);
+    --surface-muted: rgba(30, 41, 59, 0.72);
+    --accent-primary: #667eea;
+    --accent-secondary: #764ba2;
+    --accent-info: #38bdf8;
+    --accent-success: #38ef7d;
+    --accent-warning: #fbbf24;
+    --accent-danger: #f87171;
 }
 
 * {

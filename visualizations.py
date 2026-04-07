@@ -15,14 +15,17 @@ def create_correlation_heatmap(correlation_matrix):
     Create an interactive correlation heatmap
     """
     df_corr = pd.DataFrame(correlation_matrix)
+    z_values = df_corr.values.tolist()
+    axis_labels = df_corr.columns.tolist()
+    text_values = df_corr.round(2).values.tolist()
     
     fig = go.Figure(data=go.Heatmap(
-        z=df_corr.values,
-        x=df_corr.columns,
-        y=df_corr.columns,
+        z=z_values,
+        x=axis_labels,
+        y=axis_labels,
         colorscale='RdBu',
         zmid=0,
-        text=df_corr.values.round(2),
+        text=text_values,
         texttemplate='%{text}',
         textfont={"size": 10},
         colorbar=dict(title="Correlation")

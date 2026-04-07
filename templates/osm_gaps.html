@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSM Gap Analysis - Climate Resilience Research</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body.osm-page {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient-soft);
+            min-height: 100vh;
+            padding: 40px 0;
+            color: var(--text-primary);
+        }
+        .osm-page > .container {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            margin: 0 auto;
+            padding: 0 0.75rem;
+        }
+        .main-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            padding: 0;
+            overflow: hidden;
+        }
+        .hero-section {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        .hero-section .subtitle {
+            font-size: 1.3rem;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        .hero-section .description {
+            font-size: 1rem;
+            opacity: 0.8;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .stats-row {
+            background: var(--surface-muted);
+            padding: 30px 40px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            background: var(--card-bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+            margin-bottom: 20px;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #c7d2fe;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        .content-section {
+            padding: 40px;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent-primary);
+        }
+        .priority-card {
+            background: var(--card-bg-light);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid #ef4444;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .priority-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .priority-card.high {
+            border-left-color: #dc3545;
+        }
+        .priority-card.medium {
+            border-left-color: #fbbf24;
+        }
+        .priority-card h5 {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        .priority-card .description {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        .priority-card .meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .priority-badge.critical {
+            background: #ef4444;
+            color: white;
+        }
+        .priority-badge.high {
+            background: #fbbf24;
+            color: #333;
+        }
+        .priority-badge.medium {
+            background: #22c55e;
+            color: white;
+        }
+        .city-priority-table {
+            background: var(--card-bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+        }
+        .city-priority-table table {
+            margin-bottom: 0;
+        }
+        .city-priority-table th {
+            background: var(--primary-gradient);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 15px;
+        }
+        .city-priority-table td {
+            padding: 12px 15px;
+            color: var(--text-secondary);
+            border-color: var(--border-color);
+        }
+        .findings-box {
+            background: rgba(56, 189, 248, 0.12);
+            border-left: 4px solid var(--accent-info);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .findings-box h6 {
+            font-weight: 700;
+            color: #93c5fd;
+            margin-bottom: 15px;
+        }
+        .findings-box ul {
+            margin-bottom: 0;
+        }
+        .findings-box li {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+        .action-box {
+            background: rgba(251, 191, 36, 0.12);
+            border-left: 4px solid #fbbf24;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .action-box h6 {
+            font-weight: 700;
+            color: #fde68a;
+            margin-bottom: 15px;
+        }
+        .action-box ul {
+            margin-bottom: 0;
+        }
+        .action-box li {
+            margin-bottom: 8px;
+            color: #fcd34d;
+        }
+        .chart-container {
+            background: var(--card-bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+        }
+        .tab-content {
+            padding-top: 30px;
+        }
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .nav-tabs .nav-link {
+            color: var(--text-secondary);
+            font-weight: 600;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 12px 24px;
+        }
+        .nav-tabs .nav-link:hover {
+            border-color: transparent;
+            border-bottom: 3px solid var(--accent-primary);
+            color: var(--text-primary);
+        }
+        .nav-tabs .nav-link.active {
+            color: #c7d2fe;
+            background: transparent;
+            border-color: transparent;
+            border-bottom: 3px solid var(--accent-primary);
+        }
+        .footer-note {
+            text-align: center;
+            padding: 30px;
+            background: var(--surface-muted);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body class="osm-page">
+    <div class="container" style="max-width: 1400px;">
+        <div class="main-container">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <h1>🗺️ OpenStreetMap Gap Analysis</h1>
+                <div class="subtitle">Transforming OSM into a Climate Resilience Engine</div>
+                <div class="description">
+                    A comprehensive gap analysis identifying critical infrastructure data missing from OpenStreetMap 
+                    that would empower researchers to model climate resilience in 43 global megacities.
+                </div>
+                <div style="margin-top: 25px;">
+                    <a href="/osm-methodology" class="btn btn-light btn-lg" style="font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        📊 View Methodology & Calculations
+                    </a>
+                </div>
+            </div>
+
+            {% if error %}
+            <div class="content-section">
+                <div class="alert alert-danger" role="alert">
+                    <strong>Error:</strong> {{ error }}
+                </div>
+            </div>
+            {% else %}
+
+            <!-- Global Statistics -->
+            <div class="stats-row">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <div class="stat-number">{{ report.global_stats.total_cities }}</div>
+                            <div class="stat-label">Megacities Analyzed</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <div class="stat-number">{{ report.global_stats.avg_coverage }}%</div>
+                            <div class="stat-label">Average OSM Coverage</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <div class="stat-number" style="color: #dc3545;">{{ report.global_stats.cities_critical_gaps }}</div>
+                            <div class="stat-label">Cities with Critical Gaps</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <div class="stat-number" style="color: #28a745;">{{ report.global_stats.cities_good_coverage }}</div>
+                            <div class="stat-label">Cities with Good Coverage</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="content-section">
+                <!-- Methodology Info Box -->
+                <div style="background: linear-gradient(135deg, #e7f3ff 0%, #d1ecf1 100%); border-left: 5px solid #2a5298; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 style="color: #1e3c72; margin: 0 0 8px 0; font-weight: 700;">📊 Understanding the Analysis</h5>
+                            <p style="margin: 0; color: #495057;">Learn how we calculate OSM coverage scores, gap severity, and priority levels</p>
+                        </div>
+                        <a href="/osm-methodology" class="btn btn-primary" style="background: #2a5298; border: none; font-weight: 600;">
+                            View Methodology →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs" id="gapTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="wishlist-tab" data-bs-toggle="tab" 
+                                data-bs-target="#wishlist" type="button">🎯 Priority Wishlist</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="visualizations-tab" data-bs-toggle="tab" 
+                                data-bs-target="#visualizations" type="button">📊 Data Visualizations</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="cities-tab" data-bs-toggle="tab" 
+                                data-bs-target="#cities" type="button">🌆 Priority Cities</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="findings-tab" data-bs-toggle="tab" 
+                                data-bs-target="#findings" type="button">🔍 Key Findings</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="gapTabContent">
+                    <!-- Priority Wishlist Tab -->
+                    <div class="tab-pane fade show active" id="wishlist" role="tabpanel">
+                        <h2 class="section-title">Researcher's Wishlist: Features that Would Transform OSM</h2>
+                        
+                        <!-- Critical Priority -->
+                        <h4 style="color: #dc3545; margin-top: 30px;">
+                            <span class="priority-badge critical">Critical Priority</span> High Impact Features
+                        </h4>
+                        {% for feature in report.priority_wishlist["Critical Priority (High Impact)"] %}
+                        <div class="priority-card high">
+                            <h5>{{ feature.feature }}</h5>
+                            <div class="description">{{ feature.description }}</div>
+                            <div class="meta">
+                                <div><strong>Current OSM:</strong> {{ feature.current_osm }}</div>
+                                <div><strong>Impact:</strong> <span class="priority-badge critical">{{ feature.impact }}</span></div>
+                            </div>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e9ecef; color: #495057;">
+                                <strong>Why Researchers Need This:</strong> {{ feature.researcher_need }}
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <!-- High Priority -->
+                        <h4 style="color: #ffc107; margin-top: 40px;">
+                            <span class="priority-badge high">High Priority</span> Direct Impact Features
+                        </h4>
+                        {% for feature in report.priority_wishlist["High Priority (Direct Impact)"] %}
+                        <div class="priority-card medium">
+                            <h5>{{ feature.feature }}</h5>
+                            <div class="description">{{ feature.description }}</div>
+                            <div class="meta">
+                                <div><strong>Current OSM:</strong> {{ feature.current_osm }}</div>
+                                <div><strong>Impact:</strong> <span class="priority-badge high">{{ feature.impact }}</span></div>
+                            </div>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e9ecef; color: #495057;">
+                                <strong>Why Researchers Need This:</strong> {{ feature.researcher_need }}
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <!-- Medium Priority -->
+                        <h4 style="color: #28a745; margin-top: 40px;">
+                            <span class="priority-badge medium">Medium Priority</span> Supporting Features
+                        </h4>
+                        {% for feature in report.priority_wishlist["Medium Priority (Supporting Features)"] %}
+                        <div class="priority-card">
+                            <h5>{{ feature.feature }}</h5>
+                            <div class="description">{{ feature.description }}</div>
+                            <div class="meta">
+                                <div><strong>Current OSM:</strong> {{ feature.current_osm }}</div>
+                                <div><strong>Impact:</strong> <span class="priority-badge medium">{{ feature.impact }}</span></div>
+                            </div>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e9ecef; color: #495057;">
+                                <strong>Why Researchers Need This:</strong> {{ feature.researcher_need }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Visualizations Tab -->
+                    <div class="tab-pane fade" id="visualizations" role="tabpanel">
+                        <h2 class="section-title">OSM Coverage Gap Visualizations</h2>
+                        
+                        <div class="chart-container">
+                            <div id="gapSeverityChart"></div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div id="featureHeatmap"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <div id="priorityPie"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <div id="regionalChart"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div id="featureSummary"></div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div id="scatterPlot"></div>
+                        </div>
+                    </div>
+
+                    <!-- Priority Cities Tab -->
+                    <div class="tab-pane fade" id="cities" role="tabpanel">
+                        <h2 class="section-title">Top Priority Cities for OSM Mapping Efforts</h2>
+                        <p class="text-muted">Cities ranked by gap severity and climate vulnerability. These cities would benefit most from enhanced OSM coverage.</p>
+                        
+                        <div class="city-priority-table">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>City</th>
+                                        <th>Country</th>
+                                        <th>Coverage</th>
+                                        <th>Gap Severity</th>
+                                        <th>Priority</th>
+                                        <th>Critical Gap #1</th>
+                                        <th>Critical Gap #2</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for city in report.priority_cities %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td><strong>{{ city.city }}</strong></td>
+                                        <td>{{ city.country }}</td>
+                                        <td>{{ city.osm_coverage_score }}%</td>
+                                        <td><span style="color: #dc3545; font-weight: 600;">{{ city.gap_severity }}%</span></td>
+                                        <td>
+                                            {% if city.priority_level == 'High' %}
+                                            <span class="priority-badge critical">HIGH</span>
+                                            {% elif city.priority_level == 'Medium' %}
+                                            <span class="priority-badge high">MEDIUM</span>
+                                            {% else %}
+                                            <span class="priority-badge medium">LOW</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><small>{{ city.critical_gap_1 }}</small></td>
+                                        <td><small>{{ city.critical_gap_2 }}</small></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Key Findings Tab -->
+                    <div class="tab-pane fade" id="findings" role="tabpanel">
+                        <h2 class="section-title">Key Findings & Recommendations</h2>
+                        
+                        <div class="findings-box">
+                            <h6>🔍 Research Findings</h6>
+                            <ul>
+                                {% for finding in report.key_findings %}
+                                <li>{{ finding }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="action-box">
+                            <h6>🚀 Call to Action - Building an OSM Climate Infrastructure</h6>
+                            <ul>
+                                {% for action in report.call_to_action %}
+                                <li>{{ action }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div style="background: white; padding: 30px; border-radius: 12px; margin-top: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                            <h4 style="color: #1e3c72; margin-bottom: 20px;">Regional Coverage Analysis</h4>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Region</th>
+                                        <th>Cities</th>
+                                        <th>Average Coverage</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for region in report.regional_analysis %}
+                                    <tr>
+                                        <td><strong>{{ region.region }}</strong></td>
+                                        <td>{{ region.city_count }}</td>
+                                        <td>{{ region.avg_coverage }}%</td>
+                                        <td>
+                                            {% if region.avg_coverage >= 70 %}
+                                            <span class="priority-badge medium">Good</span>
+                                            {% elif region.avg_coverage >= 50 %}
+                                            <span class="priority-badge high">Moderate</span>
+                                            {% else %}
+                                            <span class="priority-badge critical">Critical</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="background: #e7f3ff; padding: 30px; border-radius: 12px; margin-top: 30px;">
+                            <h5 style="color: #1e3c72; margin-bottom: 15px;">💡 Impact Statement</h5>
+                            <p style="font-size: 1.1rem; color: #495057; line-height: 1.8; margin-bottom: 0;">
+                                By systematically mapping these critical infrastructure features in OpenStreetMap, 
+                                we can transform OSM from a navigational tool into a powerful engine for climate 
+                                adaptation research. This would enable researchers worldwide to model urban resilience, 
+                                predict cascade failures, optimize evacuation routes, and identify vulnerable populations 
+                                with unprecedented accuracy—ultimately saving lives and building more sustainable cities.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Footer -->
+            <div class="footer-note">
+                <p><strong>OSM Gap Analysis for Climate Resilience Research</strong></p>
+                <p>Analyzing 43 global megacities • Identifying critical data gaps • Empowering climate adaptation</p>
+                <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px; text-align: left;">
+                    <h6 style="color: #1e3c72; font-weight: 700; margin-bottom: 10px;">📊 Data Sources</h6>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px;">
+                        <strong>OSM Coverage Assessment:</strong> Based on systematic analysis of OpenStreetMap data via Overpass API queries, 
+                        OSM Taginfo statistics, and comparative analysis with government infrastructure datasets (2025-2026).
+                    </p>
+                    <p style="font-size: 0.9rem; color: #495057; margin-bottom: 8px;">
+                        <strong>City Climate Data:</strong> Integrated from UN-Habitat Urban Resilience Reports, C40 Cities Climate Database, 
+                        World Bank Climate Risk Assessments, and IPCC Regional Climate Impact Studies.
+                    </p>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0;">
+                        <strong>Gap Identification:</strong> Derived from research literature on climate resilience modeling requirements, 
+                        interviews with climate researchers, and analysis of infrastructure data needs in published adaptation studies.
+                    </p>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.85rem;">
+                    <a href="/" style="color: #c7d2fe; text-decoration: none;">← Return to Main Dashboard</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% if not error %}
+    <script>
+        function applyConsistentPlotlyTheme(chartJsonText) {
+            const chart = JSON.parse(chartJsonText);
+            chart.layout = chart.layout || {};
+            chart.layout.paper_bgcolor = 'rgba(0,0,0,0)';
+            chart.layout.plot_bgcolor = 'rgba(0,0,0,0)';
+            chart.layout.font = Object.assign({}, chart.layout.font || {}, {
+                family: 'Inter, Segoe UI, sans-serif',
+                color: '#e2e8f0'
+            });
+
+            ['xaxis', 'yaxis'].forEach((axisName) => {
+                if (!chart.layout[axisName]) {
+                    return;
+                }
+                chart.layout[axisName].gridcolor = chart.layout[axisName].gridcolor || 'rgba(148, 163, 184, 0.18)';
+                chart.layout[axisName].linecolor = chart.layout[axisName].linecolor || 'rgba(148, 163, 184, 0.25)';
+                chart.layout[axisName].tickfont = Object.assign({}, chart.layout[axisName].tickfont || {}, { color: '#cbd5e1' });
+            });
+
+            return chart;
+        }
+
+        function renderThemedPlotlyChart(id, chartJsonText) {
+            const chart = applyConsistentPlotlyTheme(chartJsonText);
+            Plotly.newPlot(id, chart.data, chart.layout, { responsive: true, displayModeBar: false });
+        }
+
+        // Render all Plotly charts
+        const charts = {{ charts | tojson }};
+        
+        if (charts.gap_severity_chart) {
+            renderThemedPlotlyChart('gapSeverityChart', charts.gap_severity_chart);
+        }
+        
+        if (charts.feature_heatmap) {
+            renderThemedPlotlyChart('featureHeatmap', charts.feature_heatmap);
+        }
+        
+        if (charts.priority_pie) {
+            renderThemedPlotlyChart('priorityPie', charts.priority_pie);
+        }
+        
+        if (charts.regional_chart) {
+            renderThemedPlotlyChart('regionalChart', charts.regional_chart);
+        }
+        
+        if (charts.feature_summary) {
+            renderThemedPlotlyChart('featureSummary', charts.feature_summary);
+        }
+        
+        if (charts.scatter_plot) {
+            renderThemedPlotlyChart('scatterPlot', charts.scatter_plot);
+        }
+    </script>
+    {% endif %}
+</body>
+</html>
