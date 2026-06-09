@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSM Gap Analysis Presentation Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body.presentation-page {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(45, 212, 191, 0.16), transparent 28%),
+                radial-gradient(circle at 85% 10%, rgba(251, 191, 36, 0.12), transparent 22%),
+                linear-gradient(180deg, #07121f 0%, #0c1728 42%, #101c2e 100%);
+            color: #e5eefb;
+            min-height: 100vh;
+        }
+
+        .presentation-page .navbar {
+            background: rgba(6, 11, 20, 0.72) !important;
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+        }
+
+        .presentation-shell {
+            max-width: 1520px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+        }
+
+        .hero-panel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 28px;
+            padding: 34px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background:
+                linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(7, 18, 31, 0.88)),
+                radial-gradient(circle at top right, rgba(14, 165, 233, 0.18), transparent 26%);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+        }
+
+        .hero-panel::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+            background-size: 34px 34px;
+            mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 90%);
+            pointer-events: none;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 14px;
+            border-radius: 999px;
+            background: rgba(14, 165, 233, 0.16);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: #8ddcff;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            position: relative;
+            z-index: 1;
+            font-size: clamp(2.4rem, 4vw, 4.8rem);
+            line-height: 0.96;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            margin: 18px 0 16px;
+            max-width: 13ch;
+        }
+
+        .hero-subtitle {
+            position: relative;
+            z-index: 1;
+            max-width: 74ch;
+            color: #bfd1ea;
+            font-size: 1.08rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .hero-meta {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .hero-chip {
+            padding: 9px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            color: #d7e4f8;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .hero-actions {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-hero {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+        }
+
+        .btn-primary-hero {
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            color: #062114;
+        }
+
+        .btn-primary-hero:hover {
+            background: linear-gradient(135deg, #34d399, #14b8a6);
+            color: #062114;
+        }
+
+        .btn-secondary-hero {
+            background: rgba(255, 255, 255, 0.06);
+            color: #e7f2ff;
+            border: 1px solid rgba(148, 163, 184, 0.22);
+        }
+
+        .section-label {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: #8ddcff;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .glass-card {
+            background: rgba(7, 13, 24, 0.72);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 22px;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .metric-card {
+            height: 100%;
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(7, 13, 24, 0.88));
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 20px;
+        }
+
+        .metric-number {
+            font-size: clamp(2rem, 3vw, 3rem);
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .metric-label {
+            color: #b5c6dd;
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .metric-note {
+            color: #7f95af;
+            font-size: 0.82rem;
+            margin-top: 8px;
+        }
+
+        .story-card {
+            padding: 22px;
+            background: rgba(7, 13, 24, 0.74);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 20px;
+            height: 100%;
+        }
+
+        .story-card h4,
+        .story-card h5,
+        .story-card h6,
+        .glass-card h4,
+        .glass-card h5,
+        .glass-card h6 {
+            color: #f2f7ff;
+            font-weight: 800;
+        }
+
+        .story-card p,
+        .story-card li,
+        .glass-card p,
+        .glass-card li,
+        .glass-card td,
+        .glass-card th {
+            color: #c9d7ea;
+        }
+
+        .story-list {
+            margin: 0;
+            padding-left: 1.1rem;
+        }
+
+        .story-list li {
+            margin-bottom: 10px;
+        }
+
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .timeline-step {
+            padding: 20px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(148, 163, 184, 0.14);
+        }
+
+        .step-index {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #38bdf8, #22c55e);
+            color: #05111d;
+            font-weight: 900;
+        }
+
+        .wish-card {
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: linear-gradient(180deg, rgba(12, 20, 34, 0.95), rgba(8, 14, 24, 0.92));
+            height: 100%;
+        }
+
+        .wish-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .wish-critical {
+            background: rgba(239, 68, 68, 0.16);
+            color: #ffb4b4;
+        }
+
+        .wish-high {
+            background: rgba(251, 191, 36, 0.16);
+            color: #ffe28b;
+        }
+
+        .wish-medium {
+            background: rgba(59, 130, 246, 0.16);
+            color: #a8cfff;
+        }
+
+        .wish-list {
+            padding-left: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        .wish-list li {
+            margin-bottom: 9px;
+        }
+
+        .badge-soft {
+            border-radius: 999px;
+            padding: 6px 11px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            color: #dde8f8;
+        }
+
+        .city-table table {
+            margin-bottom: 0;
+        }
+
+        .city-table th,
+        .city-table td {
+            background: transparent !important;
+            border-color: rgba(148, 163, 184, 0.14) !important;
+        }
+
+        .quote-panel {
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.14), rgba(16, 185, 129, 0.10));
+            border: 1px solid rgba(125, 211, 252, 0.16);
+            border-radius: 22px;
+        }
+
+        .findings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .finding-item {
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(148, 163, 184, 0.13);
+        }
+
+        .footer-note {
+            color: #9eb2c9;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 28px;
+        }
+
+        .section-spacer {
+            margin-top: 26px;
+        }
+
+        @media (max-width: 991px) {
+            .timeline,
+            .findings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-panel {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body class="presentation-page">
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold" href="/">🌍 Climate Adaptation</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Document Analysis</a>
+                <a class="nav-link" href="/statistics">Statistical Analysis</a>
+                <a class="nav-link" href="/dashboard">Interactive Dashboard</a>
+                <a class="nav-link active" href="/presentation-dashboard">OSM Lightning Talk</a>
+                <a class="nav-link" href="/osm-gaps">OSM Gap Analysis</a>
+                <a class="nav-link" href="/research">Research Terminal</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="presentation-shell">
+    
+    <section class="hero-panel">
+        <div class="row align-items-center g-4 position-relative">
+            <div class="col-lg-8">
+                <div class="eyebrow">State of the Map US · Lightning Talk</div>
+                <h1 class="hero-title">Gap Analysis for Climate Resilience in Megacities</h1>
+                <p class="hero-subtitle">
+                    As cities face increasing climate risks, researchers are racing to model resilience in megacities.
+                    This dashboard reframes OpenStreetMap through a research lens: what is missing, why it matters,
+                    and which mapped features would most improve climate adaptation modeling across 43 global megacities.
+                </p>
+                <div class="hero-meta">
+                    <span class="hero-chip">43 megacities analyzed</span>
+                    <span class="hero-chip">OpenStreetMap gap analysis</span>
+                    <span class="hero-chip">Researcher's wish list</span>
+                    <span class="hero-chip">Climate adaptation modeling</span>
+                </div>
+                <div class="hero-actions">
+                    <a href="/osm-gaps" class="btn btn-hero btn-primary-hero">Open full OSM analysis</a>
+                    <a href="/osm-methodology" class="btn btn-hero btn-secondary-hero">View methodology</a>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="quote-panel h-100 d-flex flex-column align-items-start">
+                    <div class="d-flex w-100 align-items-center gap-3 mb-3">
+                        <img src="/static/image.png" alt="Dhanyasri Bolla" style="width:84px;height:84px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,0.06);">
+                        <div>
+                            <div style="font-weight:800; font-size:1rem;">Dhanyasri Bolla</div>
+                            <div style="font-size:0.9rem; color:#c9d7ea;">Graduate Research Assistant, GWU</div>
+                        </div>
+                    </div>
+                    <div class="section-label">About the presenter</div>
+                    <p class="mb-3">Dhanya is a Graduate Researcher at GWU, analyzing climate resilience in global megacities. Bridging systems engineering with urban analytics, she advocates for high-fidelity open data to support infrastructure modeling and risk analysis.</p>
+                    <div class="mt-auto d-flex flex-wrap gap-2">
+                        <span class="badge-soft">Drainage</span>
+                        <span class="badge-soft">Heat</span>
+                        <span class="badge-soft">Evacuation</span>
+                        <span class="badge-soft">OSM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-spacer">
+        <div class="section-label">At a glance</div>
+        <div class="row g-3">
+            <div class="col-md-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="metric-number">43</div>
+                    <div class="metric-label">Megacities in scope</div>
+                    <div class="metric-note">Global comparison across the 43-city dataset.</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="metric-number">58.7%</div>
+                    <div class="metric-label">Average OSM coverage</div>
+                    <div class="metric-note">Coverage score aggregated from climate-relevant features.</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="metric-number">6</div>
+                    <div class="metric-label">Cities with critical gaps</div>
+                    <div class="metric-note">Cities below the critical coverage threshold.</div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="metric-card">
+                    <div class="metric-number">12</div>
+                    <div class="metric-label">Cities with strong coverage</div>
+                    <div class="metric-note">Cities at or above the good-coverage threshold.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-spacer">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="story-card h-100">
+                    <div class="section-label">Why this matters</div>
+                    <h4 class="mb-3">Researchers need more than roads and points of interest.</h4>
+                    <p>
+                        Standard OpenStreetMap coverage is excellent for navigation, but climate adaptation modeling needs
+                        infrastructure detail that is usually missing or inconsistently tagged.
+                    </p>
+                    <ul class="story-list mt-3">
+                        <li>Flood models need subsurface drainage and barrier data.</li>
+                        <li>Heat-risk response needs cooling centers, shade, and green infrastructure.</li>
+                        <li>Evacuation planning needs shelter capacity and route capacity attributes.</li>
+                        <li>Stormwater resilience needs permeability and retention infrastructure.</li>
+                    </ul>
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        <span class="badge-soft">Drainage</span>
+                        <span class="badge-soft">Flood barriers</span>
+                        <span class="badge-soft">Cooling centers</span>
+                        <span class="badge-soft">Emergency shelters</span>
+                        <span class="badge-soft">Permeable surfaces</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="story-card h-100">
+                    <div class="section-label">Research workflow</div>
+                    <div class="timeline">
+                        <div class="timeline-step">
+                            <div class="step-index">1</div>
+                            <h5>Measure the gap</h5>
+                            <p class="mb-0">Score OSM coverage and quantify how much resilience data is missing city by city.</p>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="step-index">2</div>
+                            <h5>Prioritize features</h5>
+                            <p class="mb-0">Rank mapped features by research impact, not just by mapping convenience.</p>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="step-index">3</div>
+                            <h5>Target action</h5>
+                            <p class="mb-0">Focus mapping campaigns where new tags will most improve climate models.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-spacer">
+        <div class="section-label">Priority wish list</div>
+        <div class="row g-3">
+            <div class="col-lg-4">
+                <div class="wish-card">
+                    <span class="wish-badge wish-critical">Critical priority</span>
+                    <h5>High impact features</h5>
+                    <ul class="wish-list mt-3">
+                        
+                        <li>
+                            <strong>Subsurface Drainage Networks</strong><br>
+                            <small>Essential for flood modeling and cascade failure analysis</small>
+                        </li>
+                        
+                        <li>
+                            <strong>Flood Barriers &amp; Defense Systems</strong><br>
+                            <small>Critical for flood risk assessment and protection modeling</small>
+                        </li>
+                        
+                        <li>
+                            <strong>Emergency Shelter Capacity</strong><br>
+                            <small>Essential for evacuation planning and resilience modeling</small>
+                        </li>
+                        
+                        <li>
+                            <strong>Cooling Infrastructure</strong><br>
+                            <small>Critical for heat adaptation and vulnerable population protection</small>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="wish-card">
+                    <span class="wish-badge wish-high">High priority</span>
+                    <h5>Direct impact features</h5>
+                    <ul class="wish-list mt-3">
+                        
+                        <li>
+                            <strong>Permeable Surface Coverage</strong><br>
+                            <small>Important for stormwater management and urban heat modeling</small>
+                        </li>
+                        
+                        <li>
+                            <strong>Green Corridor Networks</strong><br>
+                            <small>Important for heat mitigation and biodiversity resilience</small>
+                        </li>
+                        
+                        <li>
+                            <strong>Evacuation Route Capacity</strong><br>
+                            <small>Essential for emergency planning and resilience assessment</small>
+                        </li>
+                        
+                        <li>
+                            <strong>Water Retention Infrastructure</strong><br>
+                            <small>Important for flood management and green infrastructure planning</small>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="wish-card">
+                    <span class="wish-badge wish-medium">Medium priority</span>
+                    <h5>Supporting features</h5>
+                    <ul class="wish-list mt-3">
+                        
+                        <li>
+                            <strong>Green Roof &amp; Wall Inventory</strong><br>
+                            <small>Useful for urban heat island and stormwater modeling</small>
+                        </li>
+                        
+                        <li>
+                            <strong>Real-time Sensor Networks</strong><br>
+                            <small>Useful for validation and real-time risk assessment</small>
+                        </li>
+                        
+                        <li>
+                            <strong>Critical Facility Vulnerability</strong><br>
+                            <small>Important for cascade failure and infrastructure resilience</small>
+                        </li>
+                        
+                        <li>
+                            <strong>Underground Utility Networks</strong><br>
+                            <small>Useful for complete infrastructure modeling</small>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-spacer">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="glass-card p-4 h-100">
+                    <div class="section-label">Key findings</div>
+                    <div class="findings-grid">
+                        
+                        <div class="finding-item">
+                            <p class="mb-0">Only 12 of 43 megacities have good OSM coverage (≥70%)</p>
+                        </div>
+                        
+                        <div class="finding-item">
+                            <p class="mb-0">6 cities have critical gaps (&lt;40% coverage)</p>
+                        </div>
+                        
+                        <div class="finding-item">
+                            <p class="mb-0">Subsurface drainage networks are severely underrepresented in OSM globally</p>
+                        </div>
+                        
+                        <div class="finding-item">
+                            <p class="mb-0">Cooling infrastructure mapping is critically needed for heat adaptation</p>
+                        </div>
+                        
+                        <div class="finding-item">
+                            <p class="mb-0">Emergency shelter capacity data is almost entirely missing from OSM</p>
+                        </div>
+                        
+                        <div class="finding-item">
+                            <p class="mb-0">Permeable surface data could transform stormwater modeling accuracy</p>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="glass-card p-4 h-100">
+                    <div class="section-label">Coverage snapshot</div>
+                    <div class="d-flex flex-column gap-3">
+                        <div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Drainage mapped high</span>
+                                <span>23.3%</span>
+                            </div>
+                            <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);">
+                                <div class="progress-bar bg-info" style="width: 23.3%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Green infrastructure mapped high</span>
+                                <span>20.9%</span>
+                            </div>
+                            <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);">
+                                <div class="progress-bar" style="width: 20.9%; background: linear-gradient(90deg, #22c55e, #10b981);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Cooling centers mapped high</span>
+                                <span>37.2%</span>
+                            </div>
+                            <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);">
+                                <div class="progress-bar" style="width: 37.2%; background: linear-gradient(90deg, #f59e0b, #f97316);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Emergency shelters mapped high</span>
+                                <span>23.3%</span>
+                            </div>
+                            <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08);">
+                                <div class="progress-bar" style="width: 23.3%; background: linear-gradient(90deg, #a855f7, #ec4899);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 rounded-4" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(148,163,184,0.14);">
+                        <div class="section-label mb-2">Lowest / highest coverage</div>
+                        <div class="d-flex justify-content-between gap-3 flex-wrap">
+                            <div>
+                                <div class="text-danger fw-bold">Lowest</div>
+                                <div>Kinshasa</div>
+                            </div>
+                            <div>
+                                <div class="text-success fw-bold">Highest</div>
+                                <div>Paris</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-spacer">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="glass-card p-4 h-100 city-table">
+                    <div class="section-label">Priority cities</div>
+                    <h5 class="mb-3">Where mapping would have the biggest impact</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th>City</th>
+                                    <th>Coverage</th>
+                                    <th>Gap</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                <tr>
+                                    <td>
+                                        <strong>Kinshasa</strong><br>
+                                        <small>DR Congo</small>
+                                    </td>
+                                    <td>25%</td>
+                                    <td>75%</td>
+                                    <td>High</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <strong>Lagos</strong><br>
+                                        <small>Nigeria</small>
+                                    </td>
+                                    <td>28%</td>
+                                    <td>72%</td>
+                                    <td>High</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <strong>Karachi</strong><br>
+                                        <small>Pakistan</small>
+                                    </td>
+                                    <td>32%</td>
+                                    <td>68%</td>
+                                    <td>High</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <strong>Dhaka</strong><br>
+                                        <small>Bangladesh</small>
+                                    </td>
+                                    <td>35%</td>
+                                    <td>65%</td>
+                                    <td>High</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <strong>Lahore</strong><br>
+                                        <small>Pakistan</small>
+                                    </td>
+                                    <td>36%</td>
+                                    <td>64%</td>
+                                    <td>High</td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card p-4 h-100">
+                    <div class="section-label">Call to action</div>
+                    <h5 class="mb-3">What this talk asks of the OSM community</h5>
+                    <ul class="story-list">
+                        
+                        <li>Develop standardized OSM tagging schemas for climate infrastructure</li>
+                        
+                        <li>Create mapper guides for resilience-critical features</li>
+                        
+                        <li>Build partnerships between climate researchers and OSM community</li>
+                        
+                        <li>Establish data quality metrics for climate adaptation features</li>
+                        
+                        <li>Launch targeted mapping campaigns in high-priority cities</li>
+                        
+                    </ul>
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        <a href="/osm-gaps" class="btn btn-sm btn-primary btn-hero btn-primary-hero">Open gap analysis</a>
+                        <a href="/osm-methodology" class="btn btn-sm btn-hero btn-secondary-hero">Read methodology</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-spacer">
+        <div class="section-label">Data sources</div>
+        <div class="glass-card p-4">
+            <p class="mb-2">This analysis combines multiple open and authoritative sources:</p>
+            <ul>
+                <li>OpenStreetMap (2025-2026 snapshot) — feature extracts via Overpass API</li>
+                <li>OSM Taginfo — tag usage and completeness statistics</li>
+                <li>Government open data portals (e.g., NYC Open Data, Tokyo Open Data)</li>
+                <li>UN-Habitat Urban Resilience Database</li>
+                <li>C40 Cities Climate Leadership Group datasets</li>
+                <li>World Bank Climate Change Knowledge Portal</li>
+                <li>IPCC regional assessment reports</li>
+                <li>Research literature on VGI and OSM data quality (Haklay; Barrington‑Leigh & Millard‑Ball; Senaratne et al.)</li>
+            </ul>
+            <p class="mt-3 mb-0">Where available, government datasets were used to validate OSM coverage and to derive feature truth sets.</p>
+        </div>
+    </section>
+
+    <div class="footer-note">
+        Built for a State of the Map US lightning talk. The page turns gap analysis into a research narrative for climate adaptation.
+    </div>
+    
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

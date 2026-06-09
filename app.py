@@ -168,6 +168,16 @@ def dashboard():
     """Interactive dashboard for custom variable analysis"""
     return render_template("dashboard.html")
 
+
+@app.route("/presentation-dashboard")
+def presentation_dashboard():
+    """Presentation dashboard for the OSM gap-analysis lightning talk"""
+    try:
+        report = generate_gap_analysis_report()
+        return render_template("presentation_dashboard.html", report=report)
+    except Exception as e:
+        return render_template("presentation_dashboard.html", error=str(e))
+
 @app.route("/api/dashboard/analyze", methods=["POST"])
 def api_dashboard_analyze():
     """API endpoint for custom variable analysis"""
